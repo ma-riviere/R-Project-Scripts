@@ -21,7 +21,7 @@ suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 #### Main function ####
 #---------------------#
 
-init_packages <- function(project_pkgs, update = FALSE, clean = TRUE) {
+init_packages <- function(pkg_file, update = FALSE, clean = TRUE) {
   
   if(clean) {
     cat(note("\n[PACKAGES] Cleaning illegal project packages ...\n\n"))
@@ -29,6 +29,8 @@ init_packages <- function(project_pkgs, update = FALSE, clean = TRUE) {
   }
   
   if(update) {
+    
+    project_pkgs <- source(here::here("src", pkg_file), echo = F)[1]$value
 
     cat(note("\n[PACKAGES] Installing project packages ...\n\n"))
     install_packages(project_pkgs)
