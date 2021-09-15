@@ -21,15 +21,11 @@ suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 #### Main function ####
 #---------------------#
 
-update_packages <- function(project_pkgs, update = FALSE, clean = TRUE) {
+init_packages <- function(project_pkgs, update = FALSE, clean = TRUE) {
   
   if(clean) {
     cat(note("\n[PACKAGES] Cleaning illegal project packages ...\n\n"))
     renv::clean(prompt = FALSE)
-    
-    # TODO: make separate function
-    # unlink(dir(path = 'C:/Users/.../AppData/Local/Temp/', pattern = "Rtmp.*", recursive = FALSE, full.names = TRUE), recursive = T)
-    # clean_unlisted()
   }
   
   if(update) {
@@ -65,6 +61,7 @@ update_packages <- function(project_pkgs, update = FALSE, clean = TRUE) {
     renv::snapshot(type = "explicit", prompt = FALSE)
     
   } else {
+    cat(note("\n[PACKAGES] Restoring project packages ...\n\n"))
     renv::restore(prompt = FALSE)
     load_packages(c(common_pkgs, project_pkgs))
   }
