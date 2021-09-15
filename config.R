@@ -8,6 +8,7 @@ Sys.setenv("_R_CHECK_LENGTH_1_LOGIC2_" = "false")
 Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")
 Sys.setenv("_R_USE_PIPEBIND_" = "TRUE")
 
+# TODO: blank_slate
 
 load_configs <- function() {
   

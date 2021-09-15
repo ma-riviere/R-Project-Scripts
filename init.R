@@ -5,6 +5,9 @@
 if(!"renv" %in% utils::installed.packages()) install.packages("renv")
 renv::init()
 
+if(!"here" %in% utils::installed.packages()) install.packages("here")
+here::i_am("src/common/init.R")
+
 source("packman.R", echo = F)
 
 common_pkgs <- c("config", "magrittr", "remotes", "crayon", "knitr", "rmarkdown", "glue", "styler", "miniUI", "tools", "usethis", "rlang")
