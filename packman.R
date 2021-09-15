@@ -137,32 +137,3 @@ add_packages_to_description <- function(pkgs) {
       usethis::use_package(pkg_name, type = "Imports", min_version = TRUE)
   }
 }
-
-# clean_unlisted <- function(pkgs = c(base_pkg, proj_pkg)) {
-#   print("[DEP][INFO] Finding unused dependencies to clean")
-#   needed <- c()
-#   pkgs <- c(pkgs, c("base", "class", "compiler"))
-#   for(pkg in pkgs) {
-#     pkg <- get_pkg_name(pkg)
-#     deps <- tools::package_dependencies(pkg, recursive = T, which = "all") #, which = c("Depends", "Imports")
-#     if(!is.null(deps[[pkg]]))
-#       needed <- unique(c(needed, deps[[pkg]], pkg))
-#     else
-#       needed <- unique(c(needed, pkg))
-#   }
-#   installed <- as.data.frame(utils::installed.packages(lib.loc = renv::paths$library(), noCache = T))$Package
-#   to_remove <- installed[installed %ni% needed]
-#   renv::remove(to_remove)
-# }
-# 
-# remove_dependencies <- function(pkg, recursive = FALSE) {
-#   d <- package_dependencies(utils::installed.packages(lib.loc = renv::paths$library(), noCache = T), recursive = recursive) # (, installed...)
-#   depends <- if (!is.null(d[[pkg]])) d[[pkg]] else character()
-#   needed <- unique(unlist(d[names(d) %ni% c(pkg, depends)]))
-#   toRemove <- depends[depends %ni% needed]
-#   if (length(toRemove)) {
-#     renv::remove(toRemove)
-#   }
-# }
-
-## TODO (if DESCRIPTION not detected by Shinyapps): loop to write library() calls in dependencies.R

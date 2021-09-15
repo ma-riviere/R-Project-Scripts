@@ -3,10 +3,9 @@
 #=============================#
 
 if(!"renv" %in% utils::installed.packages()) install.packages("renv")
-renv::init()
-
 if(!"here" %in% utils::installed.packages()) install.packages("here")
-here::i_am("src/common/init.R")
+
+if(is.null(renv::project())) renv::init(project = here::here())
 
 source("packman.R", echo = F)
 
