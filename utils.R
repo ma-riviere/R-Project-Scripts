@@ -4,6 +4,8 @@
 
 "%ni%" <- Negate("%in%")
 
+get_stars <- function(expr, p.val) {ifelse(expr == regulation_type$NOT_REG, "", gtools::stars.pval(p.val))}
+
 ### From: https://michaelbarrowman.co.uk/post/getting-a-variable-name-in-a-pipeline/
 
 get_var_name <- function(x) {

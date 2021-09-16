@@ -55,6 +55,8 @@ knitr::opts_knit$set(
   # output.dir = here()
 )
 
+config <- config::get()
+
 alpha <- 0.05
 
 #-----------------------#

@@ -2,7 +2,7 @@
 #### Packages Manager ####
 #========================#
 
-base_pkgs <- c("config", "magrittr", "remotes", "crayon", "knitr", "rmarkdown", "glue", "styler", "miniUI", "tools", "usethis", "rlang")
+base_pkgs <- c("renv", "here", "config", "crayon", "usethis")
 
 options(
   pkgType = ifelse(Sys.info()[["sysname"]] == "Windows", "both", "source"),
@@ -28,11 +28,11 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
   
   if(update) {
     
-    # project_pkgs <- source(here::here("src", pkg_file), echo = F)[1]$value
+    cat(note("\n[PACKAGES] Updating submodules ...\n"))
+    shell.exec(here::here("update_commons.bat"))
     
-    if (any(c("rstan", "cmdstanr") %in% strsplit(project_pkgs, "/"))) {
+    if (any(c("rstan", "cmdstanr") %in% strsplit(project_pkgs, "/"))) 
       options(repos = c(STAN = "https://mc-stan.org/r-packages/", CRAN = "https://cloud.r-project.org/"))
-    }
     
     cat(note("\n[PACKAGES] Configuring GITHUB access ...\n"))
     configure_git()
@@ -123,8 +123,10 @@ is_installed <- function(pkg) {
 
 should_install <- function(pkg) {
   pkg_name <- get_pkg_name(pkg)
-  
-  if (is_installed(pkg_name)) if (packageVersion(pkg_name) == get_pkg_version(pkg)) return(FALSE)
+  if (is_installed(pkg_name)) {
+    if(get_pkg_version(pkg) != "0.0.0" && utils::packageVersion(pkg_name) != get_pkg_version(pkg)) return(TRUE)
+    return(FALSE) 
+  }
   return(TRUE)
 }
 
