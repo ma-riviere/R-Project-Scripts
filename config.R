@@ -2,31 +2,23 @@
 #### Config ####
 #==============#
 
-cat(main("\n[CONFIG] Configuring project ...\n\n"))
+cat(main("\n[CONFIG] Configuring project ...\n"))
 
 Sys.setenv("_R_CHECK_LENGTH_1_LOGIC2_" = "false")
 Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")
 Sys.setenv("_R_USE_PIPEBIND_" = "TRUE")
 
-# TODO: blank_slate
-
-load_configs <- function() {
-  
-  # TODO: tryCatch()
-  global_config <- config::get(file = "../../global_config.yml")
-  
-  # Else try Sys.getenv("GITHUB_PAT")
-  
-  # TODO: save into Sys.Setenv ???
-  if (!is.null(global_config$github_pat) && global_config$github_pat != "") {
-    cat(note(paste0("\n[PACKAGES] GITHUB Access Token found: ", global_config$github_pat, "\n\n")))
-  } else {
-    cat(warn("\n[PACKAGES] GITHUB Access Token NOT found - package loading might fail due to Github API's download cap.\n\n"))
-  }
-}
+global_config <- tryCatch({
+  config::get(file = "global_config.yml")
+  cat(note("\n[CONFIG] Global config file found.\n"))
+}, 
+error = function(e) {
+  cat(warn("\n[CONFIG] No global config file found.\n"))
+  return(NULL)
+})
 
 if(Sys.info()[["sysname"]] == "Linux" && grepl("WSL2", Sys.info()[["release"]])) {
-  cat(note("\n[CONFIG] WSL2 detected, setting up specific Environment Variables.\n\n"))
+  cat(note("\n[CONFIG] WSL2 detected, setting up specific Environment Variables.\n"))
   # Sys.setenv("OPENBLAS_NUM_THREADS" = "8")
 }
 
@@ -65,15 +57,20 @@ knitr::opts_knit$set(
 
 alpha <- 0.05
 
-#-----------------#
-#### Conflicts ####
-#-----------------#
-
-select <- dplyr::select
-
 #-----------------------#
 #### Package options ####
 #-----------------------#
+
+configure_git <- function() {
+  if(Sys.getenv("GITHUB_PAT") != "") {
+    cat(note(paste0("\n[CONFIG] GITHUB Access Token found: ", Sys.getenv("GITHUB_PAT"), "\n")))
+  }
+  else if (!is.null(global_config$github_pat) && global_config$github_pat != "") {
+    cat(note(paste0("\n[CONFIG] GITHUB Access Token found: ", global_config$github_pat, "\n")))
+    Sys.setenv(GITHUB_PAT = global_config$github_pat)
+  }
+  else cat(warn("\n[CONFIG] GITHUB Access Token NOT found - package loading might fail due to Github API's download cap.\n"))
+}
 
 configure_packages <- function() {
   
@@ -86,7 +83,7 @@ configure_packages <- function() {
   if ("rentrez" %in% installed_packages) {
     ekey <- Sys.getenv("ENTREZ_KEY")
     if (!is.null(ekey)) {
-      cat(crayon::blue("\n[OPTS][INFO] Entrez API Key detected and loaded: ", ekey, "\n\n"))
+      cat(crayon::blue("\n[OPTS][INFO] Entrez API Key detected and loaded: ", ekey, "\n"))
       rentrez::set_entrez_key(ekey)
     }
   }
@@ -154,8 +151,7 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.26.1") 
       }
       
       if (Sys.info()[["sysname"]] == "Windows") {
-        # cmdstanr::install_cmdstan(dir = cmdstan_install_path, overwrite = T, cpp_options = cpp_opts, version = version)
-        
+
         cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_version_name}.tar.gz")
         cmdstan_archive_path <- glue::glue("{cmdstan_install_path}{cmdstan_version_name}.tar.gz")
         download.file(cmdstan_archive_url, destfile = cmdstan_archive_path, mode = "wb")
@@ -165,8 +161,7 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.26.1") 
         cmdstanr::rebuild_cmdstan(quiet = TRUE)
       }
       else if (Sys.info()[["sysname"]] == "Linux") {
-        cmdstanr::install_cmdstan(dir = cmdstan_install_path, overwrite = T, cpp_options = cpp_opts, version = version)
-        # cmdstanr::install_cmdstan(overwrite = T, cpp_options = list("STAN_THREADS" = FALSE, "STAN_NO_RANGE_CHECKS" = TRUE, "PRECOMPILED_HEADERS" = TRUE, "STAN_CPP_OPTIMS" = TRUE), version = "2.26.1")
+        cmdstanr::install_cmdstan(overwrite = T, cpp_options = cpp_opts, version = version)
       }
     }
     

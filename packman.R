@@ -1,6 +1,8 @@
-#=======================#
-#### Package Manager ####
-#=======================#
+#========================#
+#### Packages Manager ####
+#========================#
+
+base_pkgs <- c("config", "magrittr", "remotes", "crayon", "knitr", "rmarkdown", "glue", "styler", "miniUI", "tools", "usethis", "rlang")
 
 options(
   pkgType = ifelse(Sys.info()[["sysname"]] == "Windows", "both", "source"),
@@ -8,10 +10,6 @@ options(
   # install.packages.check.source = "no",
   verbose = FALSE
 )
-
-if (any(c("rstan", "cmdstanr") %in% strsplit(proj_pkg, "/"))) {
-  options(repos = c(STAN = "https://mc-stan.org/r-packages/", CRAN = "https://cloud.r-project.org/"))
-}
 
 Sys.setenv(MAKEFLAGS = paste("-j", getOption("Ncpus"), sep = ""))
 
@@ -21,24 +19,31 @@ suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 #### Main function ####
 #---------------------#
 
-init_packages <- function(pkg_file, update = FALSE, clean = TRUE) {
+init_project_packages <- function(update = FALSE, clean = TRUE) {
   
   if(clean) {
-    cat(note("\n[PACKAGES] Cleaning illegal project packages ...\n\n"))
+    cat(note("\n[PACKAGES] Cleaning illegal project packages ...\n"))
     renv::clean(prompt = FALSE)
   }
   
   if(update) {
     
-    project_pkgs <- source(here::here("src", pkg_file), echo = F)[1]$value
-
-    cat(note("\n[PACKAGES] Installing project packages ...\n\n"))
+    # project_pkgs <- source(here::here("src", pkg_file), echo = F)[1]$value
+    
+    if (any(c("rstan", "cmdstanr") %in% strsplit(project_pkgs, "/"))) {
+      options(repos = c(STAN = "https://mc-stan.org/r-packages/", CRAN = "https://cloud.r-project.org/"))
+    }
+    
+    cat(note("\n[PACKAGES] Configuring GITHUB access ...\n"))
+    configure_git()
+    
+    cat(note("\n[PACKAGES] Installing project packages ...\n"))
     install_packages(project_pkgs)
     
-    cat(note("\n[PACKAGES] Loading project packages ...\n\n"))
-    load_packages(c(common_pkgs, project_pkgs))
+    cat(note("\n[PACKAGES] Loading project packages ...\n"))
+    load_packages(c(base_pkgs, project_pkgs))
     
-    cat(note("\n[PACKAGES] Configuring project packages ...\n\n"))
+    cat(note("\n[PACKAGES] Configuring project packages ...\n"))
     configure_packages()
     
     cat(note("\n[PACKAGES] Indexing project packages ...\n\n"))
@@ -57,16 +62,30 @@ init_packages <- function(pkg_file, update = FALSE, clean = TRUE) {
       check_name = FALSE
     )
     usethis::use_mit_license("Marc-Aurele RIVIERE")
-    add_packages_to_description(c(common_pkgs, project_pkgs))
+    add_packages_to_description(c(base_pkgs, project_pkgs))
     
     ## Updating renv.lock
     renv::snapshot(type = "explicit", prompt = FALSE)
     
   } else {
-    cat(note("\n[PACKAGES] Restoring project packages ...\n\n"))
+    cat(note("\n[PACKAGES] Restoring project packages ...\n"))
     renv::restore(prompt = FALSE)
-    load_packages(c(common_pkgs, project_pkgs))
+    load_packages(c(base_pkgs, project_pkgs))
   }
+  
+  cat(note("\n[PACKAGES] Configuring package options ...\n"))
+  configure_packages()
+}
+
+init_base_packages <- function() {
+  install_packages(base_pkgs)
+  
+  main <<- crayon::magenta$bold
+  note <<- crayon::blue
+  error <<- crayon::red
+  warn <<- crayon::yellow
+  
+  cat(main("\n[PACKAGES] Base packages installed.\n"))
 }
 
 #------------------------#
