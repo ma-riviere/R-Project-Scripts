@@ -2,7 +2,7 @@
 #### Packages Manager ####
 #========================#
 
-base_pkgs <- c("renv", "here", "config", "crayon", "usethis")
+base_pkgs <- c("renv", "here", "config", "knitr", "rmarkdown", "ggplot2", "crayon", "usethis")
 
 options(
   pkgType = ifelse(Sys.info()[["sysname"]] == "Windows", "both", "source"),
@@ -41,7 +41,7 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
     install_packages(project_pkgs)
     
     cat(note("\n[PACKAGES] Loading project packages ...\n"))
-    load_packages(c(base_pkgs, project_pkgs))
+    load_packages(project_pkgs)
     
     cat(note("\n[PACKAGES] Configuring project packages ...\n"))
     configure_packages()
@@ -70,7 +70,7 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
   } else {
     cat(note("\n[PACKAGES] Restoring project packages ...\n"))
     renv::restore(prompt = FALSE)
-    load_packages(c(base_pkgs, project_pkgs))
+    load_packages(project_pkgs)
   }
   
   cat(note("\n[PACKAGES] Configuring package options ...\n"))
@@ -84,6 +84,8 @@ init_base_packages <- function() {
   note <<- crayon::blue
   error <<- crayon::red
   warn <<- crayon::yellow
+  
+  load_packages(base_pkgs)
   
   cat(main("\n[PACKAGES] Base packages installed.\n"))
 }
