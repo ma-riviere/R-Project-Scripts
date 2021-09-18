@@ -7,9 +7,15 @@ cat("\n>> [SETUP] Starting Global Setup ... <<\n")
 if(!"renv" %in% utils::installed.packages()) {install.packages("renv"); library(renv)}
 
 if(is.null(renv::project())) {
-    renv::init(project = here::here(), bare = TRUE, restart = FALSE)
+  renv::init(project = here::here(), bare = TRUE, restart = FALSE)
+  if(!file.exists(here::here("config.yml"))) {
     file.create(here::here("config.yml"))
     cat('default:\r  data: !expr here::here("data", "my_data.csv")\r', file = here::here("config.yml"))
+  }
+  if(!file.exists(here::here("secret.yml"))) {
+    file.create(here::here("secret.yml"))
+    cat('default:\r', file = here::here("secret.yml"))
+  }
 }
 
 # TODO: usethis::use_blank_slate(scope = "project") <- only once ? no prompt ?
