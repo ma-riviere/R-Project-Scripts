@@ -82,3 +82,15 @@ save_png <- function(plot, filename = NULL, dpi = 600, width = 8, height = 8, di
 get_current_file_name <- function() {
   rstudioapi::getActiveDocumentContext()$path |> str_split(pattern = "/") |> first() |> last() |> str_split("[.]") |> first() |> first()
 }
+
+## Get element by name from list:
+rmatch <- function(x, name) {
+  pos <- match(name, names(x))
+  if (!is.na(pos)) return(x[[pos]])
+  for (el in x) {
+    if (class(el) == "list") {
+      out <- Recall(el, name)
+      if (!is.null(out)) return(out)
+    }
+  }
+}

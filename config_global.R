@@ -1,8 +1,8 @@
-#==============#
-#### Config ####
-#==============#
+#=====================#
+#### Global Config ####
+#=====================#
 
-cat(main("\n[CONFIG] Configuring project ...\n"))
+cat(main("\n[CONFIG] Loading Global Configs ...\n"))
 
 Sys.setenv("_R_CHECK_LENGTH_1_LOGIC2_" = "false")
 Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")
@@ -25,7 +25,6 @@ if(Sys.info()[["sysname"]] == "Linux" && grepl("WSL2", Sys.info()[["release"]]))
 options(
   scipen = 999L, 
   digits = 4L,
-  # contrasts = c("contr.sum", "contr.poly"), # c("contr.orthonorm", "contr.poly"),
   mc.cores = max(1, parallel::detectCores(logical = TRUE)),
   na.action = "na.omit",
   seed = 256L
@@ -56,18 +55,16 @@ knitr::opts_knit$set(
   # output.dir = here()
 )
 
-config <- config::get()
-
 #-----------------------#
 #### Package options ####
 #-----------------------#
 
 configure_git <- function() {
   if(Sys.getenv("GITHUB_PAT") != "") {
-    cat(note(paste0("\n[CONFIG] GITHUB Access Token found: ", Sys.getenv("GITHUB_PAT"), "\n")))
+    cat(note("\n[CONFIG] GITHUB Access Token found: ", Sys.getenv("GITHUB_PAT"), "\n"))
   }
   else if (!is.null(global_config$github_pat) && global_config$github_pat != "") {
-    cat(note(paste0("\n[CONFIG] GITHUB Access Token found: ", global_config$github_pat, "\n")))
+    cat(note("\n[CONFIG] GITHUB Access Token found: ", global_config$github_pat, "\n"))
     Sys.setenv(GITHUB_PAT = global_config$github_pat)
   }
   else cat(warn("\n[CONFIG] GITHUB Access Token NOT found - package loading might fail due to Github API's download cap.\n"))
@@ -80,14 +77,6 @@ configure_packages <- function() {
   if ("rstan" %in% installed_packages) rstan::rstan_options(auto_write = TRUE)
   
   if ("loo" %in% installed_packages) options(loo.cores = getOption("mc.cores"))
-  
-  if ("rentrez" %in% installed_packages) {
-    ekey <- Sys.getenv("ENTREZ_KEY")
-    if (!is.null(ekey)) {
-      cat(crayon::blue("\n[OPTS][INFO] Entrez API Key detected and loaded: ", ekey, "\n"))
-      rentrez::set_entrez_key(ekey)
-    }
-  }
   
   if ("tidytable" %in% installed_packages || "data.table" %in% installed_packages) data.table::setDTthreads(getOption("mc.cores"))
   

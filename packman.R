@@ -43,9 +43,6 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
     cat(note("\n[PACKAGES] Loading project packages ...\n"))
     load_packages(project_pkgs)
     
-    cat(note("\n[PACKAGES] Configuring project packages ...\n"))
-    configure_packages()
-    
     cat(note("\n[PACKAGES] Indexing project packages ...\n\n"))
     if(file.exists(here::here("DESCRIPTION"))) file.remove(here::here("DESCRIPTION"))
     
@@ -73,7 +70,7 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
     load_packages(project_pkgs)
   }
   
-  cat(note("\n[PACKAGES] Configuring package options ...\n"))
+  cat(note("\n[PACKAGES] Configuring project's packages ...\n"))
   configure_packages()
 }
 
