@@ -116,7 +116,7 @@ configure_packages <- function() {
 }
 
 configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.26.1") {
-  if("cmdstanr" %in% installed_packages) {
+  if("cmdstanr" %in% get_renv_installed_pkgs()) {
     cmdstanr::check_cmdstan_toolchain(fix = TRUE)
     
     sys.name <- Sys.info()
