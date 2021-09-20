@@ -115,7 +115,7 @@ configure_packages <- function() {
   
 }
 
-configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.26.1") {
+configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.27.0") {
   if("cmdstanr" %in% get_renv_installed_pkgs()) {
     cmdstanr::check_cmdstan_toolchain(fix = TRUE)
     
@@ -130,28 +130,28 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.26.1") 
     
     if (rebuild) {
       if (openCL) {
-        path_to_opencl_lib <- "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.3/lib/x64"
+        path_to_opencl_lib <- "D:\\Program Files\\CUDA\\lib\\x64"
         cpp_opts <<- list(
-          "CXXFLAGS += -fpermissive", "STAN_OPENCL" = TRUE,
-          "stan_threads" = FALSE, "PRECOMPILED_HEADERS" = FALSE, "STAN_CPP_OPTIMS" = TRUE, "STAN_NO_RANGE_CHECKS" = TRUE,
-          paste0("LDFLAGS+= -L\"", path_to_opencl_lib, "\" -lOpenCL")
+          "PRECOMPILED_HEADERS" = FALSE,
+          paste0("LDFLAGS= -L\"",path_to_opencl_lib,"\" -lOpenCL"),
+          paste0("LDFLAGS_OPENCL= -L\"",path_to_opencl_lib,"\" -lOpenCL")
         )
       } else {
-        cpp_opts <<- list("stan_threads" = FALSE, "STAN_NO_RANGE_CHECKS" = TRUE, "PRECOMPILED_HEADERS" = TRUE, "STAN_CPP_OPTIMS" = TRUE)
+        cpp_opts <<- list("STAN_NO_RANGE_CHECKS" = TRUE, "PRECOMPILED_HEADERS" = TRUE, "STAN_CPP_OPTIMS" = TRUE)
       }
       
       if (Sys.info()[["sysname"]] == "Windows") {
 
-        cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_version_name}.tar.gz")
-        cmdstan_archive_path <- glue::glue("{cmdstan_install_path}{cmdstan_version_name}.tar.gz")
-        download.file(cmdstan_archive_url, destfile = cmdstan_archive_path, mode = "wb")
+        # cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_version_name}.tar.gz")
+        # cmdstan_archive_path <- glue::glue("{cmdstan_install_path}{cmdstan_version_name}.tar.gz")
+        # download.file(cmdstan_archive_url, destfile = cmdstan_archive_path, mode = "wb")
         # untar(cmdstan_archive_path) # TODO: find working method of unpacking
         
         cmdstanr::cmdstan_make_local(cpp_options = cpp_opts)
         cmdstanr::rebuild_cmdstan(quiet = TRUE)
       }
       else if (Sys.info()[["sysname"]] == "Linux") {
-        cmdstanr::install_cmdstan(overwrite = T, cpp_options = cpp_opts, version = version)
+        cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
       }
     }
     
