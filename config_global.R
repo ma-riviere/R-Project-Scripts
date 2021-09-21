@@ -126,16 +126,20 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.27.0") 
     cmdstanr::set_cmdstan_path(path = paste0(cmdstan_install_path, cmdstan_version_name))
     
     if (rebuild) {
+      
+      ## Defining options based on OS
+      
+      cpp_opts <- list("PRECOMPILED_HEADERS" = FALSE, "STAN_CPP_OPTIMS" = TRUE)
+      
       if (openCL) {
-        path_to_opencl_lib <- "D:\\Program Files\\CUDA\\lib\\x64"
-        cpp_opts <<- list(
-          "PRECOMPILED_HEADERS" = FALSE,
-          paste0("LDFLAGS= -L\"",path_to_opencl_lib,"\" -lOpenCL"),
-          paste0("LDFLAGS_OPENCL= -L\"",path_to_opencl_lib,"\" -lOpenCL")
-        )
-      } else {
-        cpp_opts <<- list("STAN_NO_RANGE_CHECKS" = TRUE, "PRECOMPILED_HEADERS" = TRUE, "STAN_CPP_OPTIMS" = TRUE)
+        
+        if (Sys.info()[["sysname"]] == "Windows") {
+          path_to_opencl_lib <- "D:\\Program Files\\CUDA\\lib\\x64"
+          cpp_opts <- append(cpp_opts, c(paste0("LDFLAGS= -L\"",path_to_opencl_lib,"\" -lOpenCL"), paste0("LDFLAGS_OPENCL= -L\"",path_to_opencl_lib,"\" -lOpenCL")))
+        }
       }
+      
+      ## Installing
       
       if (Sys.info()[["sysname"]] == "Windows") {
 
