@@ -8,20 +8,6 @@ Sys.setenv("_R_CHECK_LENGTH_1_LOGIC2_" = "false")
 Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")
 Sys.setenv("_R_USE_PIPEBIND_" = "TRUE")
 
-global_config <- tryCatch({
-  config::get(file = "global_config.yml")
-  cat(note("\n[CONFIG] Global config file found.\n"))
-}, 
-error = function(e) {
-  cat(warn("\n[CONFIG] No global config file found.\n"))
-  return(NULL)
-})
-
-if(Sys.info()[["sysname"]] == "Linux" && grepl("WSL2", Sys.info()[["release"]])) {
-  cat(note("\n[CONFIG] WSL2 detected, setting up specific Environment Variables.\n"))
-  # Sys.setenv("OPENBLAS_NUM_THREADS" = "8")
-}
-
 options(
   scipen = 999L, 
   digits = 4L,
@@ -58,6 +44,18 @@ knitr::opts_knit$set(
 #-----------------------#
 #### Package options ####
 #-----------------------#
+
+load_global_config <- function() {
+  global_config <- tryCatch(
+    config::get(file = "global_config.yml"), 
+    error = \(e) return(NULL)
+  )
+  
+  if(!is.null(global_config)) cat(note("\n[CONFIG] Global config file found.\n"))
+  else cat(warn("\n[CONFIG] No global config file found.\n"))
+  
+  return(global_config)
+}
 
 configure_git <- function() {
   if(Sys.getenv("GITHUB_PAT") != "") {

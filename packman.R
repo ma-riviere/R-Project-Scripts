@@ -29,7 +29,7 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
   if(update) {
     
     cat(note("\n[PACKAGES] Updating submodules ...\n"))
-    shell.exec(here::here("update_commons.bat"))
+    update_submodules()
     
     if (any(c("rstan", "cmdstanr") %in% strsplit(project_pkgs, "/"))) 
       options(repos = c(STAN = "https://mc-stan.org/r-packages/", CRAN = "https://cloud.r-project.org/"))
