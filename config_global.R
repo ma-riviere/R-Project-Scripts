@@ -13,7 +13,7 @@ options(
   digits = 4L,
   mc.cores = max(1, parallel::detectCores(logical = TRUE)),
   na.action = "na.omit",
-  seed = 256L
+  seed = 256
 )
 
 set.seed(getOption("seed"))
