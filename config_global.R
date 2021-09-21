@@ -38,7 +38,6 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(
   root.dir = here::here(),
   verbose = FALSE
-  # output.dir = here()
 )
 
 #-----------------------#
