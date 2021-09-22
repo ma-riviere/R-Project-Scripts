@@ -11,7 +11,7 @@ options(
   verbose = FALSE
 )
 
-Sys.setenv(MAKEFLAGS = paste("-j", getOption("Ncpus"), sep = ""))
+Sys.setenv(MAKEFLAGS = paste0("-j", getOption("Ncpus")))
 
 suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 
