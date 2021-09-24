@@ -72,10 +72,16 @@ hush <- function(output){
   return(temp)
 }
 
-save_png <- function(plot, filename = NULL, dpi = 600, width = 8, height = 8, display = TRUE) {
+save_png <- function(plot, filename = NULL, subfolder = "", dpi = 600, width = 8, height = 8, display = TRUE) {
   if(is.null(filename)) filename <- as.list(match.call()[-1])$plot
-  filename <- here("fig", paste(filename, ".png", sep = ""))
-  ggsave(filename = filename, plot = plot, device = "png", scale = 1, dpi = dpi, width = width, height = height)
+  
+  file_path <- here("fig", paste0(filename, ".png"))
+  if(subfolder != "") {
+    if(!dir.exists(here::here("fig", subfolder))) dir.create(here::here("fig", subfolder))
+    file_path <- here("fig", subfolder, paste0(filename, ".png"))
+  }
+  
+  ggsave(filename = file_path, plot = plot, device = "png", scale = 1, dpi = dpi, width = width, height = height)
   if(display) return(plot)
 }
 
