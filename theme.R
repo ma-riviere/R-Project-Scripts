@@ -4,13 +4,6 @@
 
 cat(note("\n[CONFIG] Setting custom ggplot theme ...\n"))
 
-options(
-  ggplot2.discrete.colour = "viridis_d",
-  ggplot2.discrete.fill = "viridis_d",
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-
 invis_custom <- ggplot2::theme_minimal() +
   ggplot2::theme(
     plot.background = element_rect(fill = "transparent", colour = NA),
