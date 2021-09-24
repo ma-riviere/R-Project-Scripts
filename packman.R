@@ -20,13 +20,13 @@ suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 #---------------------#
 
 init_project_packages <- function(update = FALSE, clean = TRUE) {
-  
-  if(clean) {
-    cat(note("\n[PACKAGES] Cleaning illegal project packages ...\n"))
-    renv::clean(prompt = FALSE)
-  }
-  
+    
   if(update) {
+
+    if(clean) {
+      cat(note("\n[PACKAGES] Cleaning illegal project packages ...\n"))
+      renv::clean(prompt = FALSE)
+    }
     
     cat(note("\n[PACKAGES] Updating submodules ...\n"))
     update_submodules()
