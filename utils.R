@@ -6,6 +6,8 @@
 
 get_stars <- function(expr, p.val) {ifelse(expr == regulation_type$NOT_REG, "", gtools::stars.pval(p.val))}
 
+recode_factor <- function(fctr) return(car::Recode(fctr, glue::glue_collapse(glue::glue("'{levels(fctr)}' = {as.vector(contrasts(fctr)[,1])}"), sep = "; ") |> as_string()))
+
 ### From: https://michaelbarrowman.co.uk/post/getting-a-variable-name-in-a-pipeline/
 
 get_var_name <- function(x) {
