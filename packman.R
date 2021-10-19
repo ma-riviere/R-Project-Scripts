@@ -2,7 +2,7 @@
 #### Packages Manager ####
 #========================#
 
-base_pkgs <- c("renv", "here", "config", "gert@1.4.0", "knitr", "rmarkdown", "ggplot2", "crayon", "usethis")
+base_pkgs <- c("renv", "here", "config", "gert", "knitr", "rmarkdown", "ggplot2", "crayon", "usethis")
 
 options(
   pkgType = ifelse(Sys.info()[["sysname"]] == "Windows", "both", "source"),
