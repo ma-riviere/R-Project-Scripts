@@ -119,7 +119,7 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.28.1") 
     ## Init
     
     if (Sys.info()[["sysname"]] == "Windows") cmdstan_install_path <<- normalizePath("D:/Dev/SDK/.cmdstanr/") # TODO: when BUG is fixed, remove .cmdstanr/
-    else if (Sys.info()[["sysname"]] == "Linux") cmdstan_install_path <<- normalizePath("/home/mar/.cmdstanr/") # TODO: when BUG is fixed, remove .cmdstanr/
+    else if (Sys.info()[["sysname"]] == "Linux") cmdstan_install_path <<- normalizePath("/home/mar/Dev/SDK/.cmdstanr/") # TODO: when BUG is fixed, remove .cmdstanr/
     
     if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path)
     
