@@ -134,7 +134,7 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.28.1") 
     
     if (rebuild) {
       
-      cpp_opts <- list(stan_threads = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE)
+      cpp_opts <- list(STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE)
       
       ## OpenCL
       
@@ -145,7 +145,7 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.28.1") 
         cpp_opts <- append(
           cpp_opts,
           c(
-            stan_opencl = TRUE,
+            STAN_OPENCL = TRUE,
             # PRECOMPILED_HEADERS = FALSE,
             OPENCL_DEVICE_ID = 0,
             OPENCL_PLATFORM_ID = 0,
