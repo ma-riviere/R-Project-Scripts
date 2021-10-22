@@ -119,12 +119,12 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.28.1") 
     ## Init
     
     if (Sys.info()[["sysname"]] == "Windows") cmdstan_install_path <<- normalizePath("D:/Dev/SDK/.cmdstanr/") # TODO: when BUG is fixed, remove .cmdstanr/
-    else if (Sys.info()[["sysname"]] == "Linux") cmdstan_install_path <<- normalizePath("/home/mar/Dev/SDK/.cmdstanr/") # TODO: when BUG is fixed, remove .cmdstanr/
+    else if (Sys.info()[["sysname"]] == "Linux") cmdstan_install_path <<- normalizePath("/home/mar/Dev/SDK/")
     
     if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path)
     
-    # OLD_HOME <- Sys.getenv("HOME") # BUG: not needed while BUG is not fixed
-    # Sys.setenv(HOME = cmdstan_install_path)
+    OLD_HOME <- Sys.getenv("HOME") # BUG: does not work on Windows as of 2.28.1
+    Sys.setenv(HOME = cmdstan_install_path)
     
     cmdstan_file_name <- paste0("cmdstan-", version)
     cmdstan_path <- normalizePath(file.path(cmdstan_install_path, cmdstan_file_name))
@@ -172,7 +172,7 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.28.1") 
         cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
       }
       
-      # Sys.setenv(HOME = OLD_HOME)
+      Sys.setenv(HOME = OLD_HOME)
     }
     
     CMDSTAN_TBB <- normalizePath(file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb"))
