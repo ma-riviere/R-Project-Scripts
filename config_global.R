@@ -138,20 +138,14 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.28.1") 
       
       ## OpenCL
       
-      if (openCL && Sys.info()[["sysname"]] == "Windows") {
+      if (openCL) {
         
-        CUDA_PATH <- normalizePath("D:/Program Files/CUDA/lib/x64")
-        
-        cpp_opts <- append(
-          cpp_opts,
-          c(
-            STAN_OPENCL = TRUE,
-            # PRECOMPILED_HEADERS = FALSE,
-            OPENCL_DEVICE_ID = 0,
-            OPENCL_PLATFORM_ID = 0,
-            paste0("LDFLAGS_OPENCL=-L\"", CUDA_PATH, "\" -lOpenCL") # paste0("LDFLAGS= -L\"", CUDA_PATH, "\" -lOpenCL")
-          )
-        ) 
+        cpp_opts <- append(cpp_opts, c(STAN_OPENCL = TRUE, OPENCL_DEVICE_ID = 0, OPENCL_PLATFORM_ID = 0))
+
+        if(Sys.info()[["sysname"]] == "Windows") {
+          CUDA_PATH <- normalizePath("D:/Program Files/CUDA/lib/x64")
+          cpp_opts <- append(cpp_opts, paste0("LDFLAGS_OPENCL=-L\"", CUDA_PATH, "\" -lOpenCL"))
+        }
       }
       
       ## Install
