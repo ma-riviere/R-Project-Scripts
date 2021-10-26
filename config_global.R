@@ -112,65 +112,95 @@ configure_packages <- function() {
   
 }
 
-configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = "2.28.1") {
+configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = NULL) {
   
   if("cmdstanr" %in% get_renv_installed_pkgs()) {
     
-    ## Init
+    ## Initialization
     
-    if (Sys.info()[["sysname"]] == "Windows") cmdstan_install_path <<- normalizePath("D:/Dev/SDK/.cmdstanr/") # TODO: when BUG is fixed, remove .cmdstanr/
-    else if (Sys.info()[["sysname"]] == "Linux") cmdstan_install_path <<- normalizePath("/home/mar/Dev/SDK/")
+    cat(note("\n[CONFIG] Setting up CmdStan ...\n"))
+    
+    if(is.null(version)) version <- gh::gh("GET /repos/stan-dev/cmdstan/releases/latest")[["tag_name"]] |> substring(2)
+    cat(note("\n[CONFIG] Using CmdStan version: ", version, "\n"))
+    
+    ### INFO: If env.var "CMDSTAN" exists, then its value will be automatically set as the default path to CmdStan for the R session
+    
+    if (Sys.info()[["sysname"]] == "Windows") cmdstan_root <<- normalizePath("D:/Dev/SDK/")
+    else if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <<- normalizePath("/home/mar/Dev/SDK/")
+    
+    cmdstan_dir <- ".cmdstanr"
+    cmdstan_version <- paste0("cmdstan-", version)
+    cmdstan_install_path <- normalizePath(file.path(cmdstan_root, cmdstan_dir))
     
     if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path)
     
-    OLD_HOME <- Sys.getenv("HOME") # BUG: does not work on Windows as of 2.28.1
-    Sys.setenv(HOME = cmdstan_install_path)
+    cmdstan_path <- normalizePath(file.path(cmdstan_install_path, cmdstan_version))
     
-    cmdstan_file_name <- paste0("cmdstan-", version)
-    cmdstan_path <- normalizePath(file.path(cmdstan_install_path, cmdstan_file_name))
-    cmdstanr::set_cmdstan_path(cmdstan_path)
-    
-    Sys.setenv(CMDSTAN = cmdstan_install_path)
-    
+    ## Rebuilding CmdStan install
     if (rebuild) {
+      
+      ### General params
+      
+      #### Changing default installation location (i.e. "HOME") to provided path
+      OLD_HOME <- Sys.getenv("HOME")
+      Sys.setenv(HOME = cmdstan_root)
       
       cpp_opts <- list(STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE)
       
-      ## OpenCL
-      
+      ### OpenCL params
       if (openCL) {
         
-        cpp_opts <- append(cpp_opts, c(STAN_OPENCL = TRUE, OPENCL_DEVICE_ID = 0, OPENCL_PLATFORM_ID = 0))
-
+        cpp_opts_cl <- c(STAN_OPENCL = TRUE, OPENCL_DEVICE_ID = 0, OPENCL_PLATFORM_ID = 0)
+        
+        if(Sys.info()[["sysname"]] == "Linux") cpp_opts <- append(cpp_opts, cpp_opts_cl)
+        
         if(Sys.info()[["sysname"]] == "Windows") {
-          CUDA_PATH <- normalizePath(file.path(Sys.getenv("CUDA_PATH"), "/lib/x64"))
-          cpp_opts <- append(cpp_opts, paste0("LDFLAGS_OPENCL=-L\"", CUDA_PATH, "\" -lOpenCL"))
+          if(Sys.getenv("CUDA_PATH") != "") {
+            
+            CUDA_PATH <- normalizePath(file.path(Sys.getenv("CUDA_PATH"), "/lib/x64"))
+            
+            if(dir.exists(CUDA_PATH)) {
+              cat(note("\n[CONFIG] Found existing CUDA_PATH: ", CUDA_PATH, "\n"))
+              cpp_opts_cl <- append(cpp_opts_cl, paste0("LDFLAGS_OPENCL=-L\"", CUDA_PATH, "\" -lOpenCL"))
+              cpp_opts <- append(cpp_opts, cpp_opts_cl)
+            }
+            else cat(warn("\n[CONFIG] The specified CUDA path does not exist.\n"))
+          } 
+          else {
+            cat(warn("\n[CONFIG] No CUDA_PATH specified in the environment variables.\n"))
+          }
         }
       }
       
-      ## Install
+      ### Installation
       
       if (Sys.info()[["sysname"]] == "Windows") {
         # cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
-
-        cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_file_name}.tar.gz")
-        cmdstan_archive_path <- paste0(cmdstan_path, ".tar.gz")
-        download.file(cmdstan_archive_url, destfile = cmdstan_archive_path, mode = "wb")
-        untar(tarfile = cmdstan_archive_path, exdir = cmdstan_install_path)
-        cmdstanr::set_cmdstan_path(cmdstan_path) # BUG (2.28.1): Has to be here too
-        cmdstanr::cmdstan_make_local(dir = cmdstan_path, cpp_options = cpp_opts)
+        
+        cmdstan_archive_name <- paste0(cmdstan_version, ".tar.gz")
+        cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_archive_name}")
+        
+        download.file(cmdstan_archive_url, destfile = cmdstan_archive_name, mode = "wb")
+        untar(tarfile = cmdstan_archive_name, exdir = cmdstan_install_path)
+        cmdstanr::set_cmdstan_path(cmdstan_path) # FIXME (2.28.1): Has to be here too ???
+        cmdstanr::cmdstan_make_local(dir = cmdstan_path, cpp_options = cpp_opts, append = FALSE)
         cmdstanr::rebuild_cmdstan(dir = cmdstan_path, quiet = TRUE)
-        if (file.exists(cmdstan_archive_path)) file.remove(cmdstan_archive_path)
+        if (file.exists(cmdstan_archive_name)) file.remove(cmdstan_archive_name)
       }
       else if (Sys.info()[["sysname"]] == "Linux") {
         cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
       }
       
       Sys.setenv(HOME = OLD_HOME)
+      
+    } else { ## No rebuild, only configure
+      cmdstanr::set_cmdstan_path(cmdstan_path)
     }
     
-    CMDSTAN_TBB <- normalizePath(file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb"))
-    Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
+    if (Sys.info()[["sysname"]] == "Windows") {
+      CMDSTAN_TBB <- normalizePath(file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb"))
+      Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
+    }
     
     options(brms.backend = "cmdstanr")
   }
