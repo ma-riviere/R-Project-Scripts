@@ -102,3 +102,11 @@ rmatch <- function(x, name) {
     }
   }
 }
+
+## Convert matrix to math latex notation
+matrix2latex <- function(mat) {
+  printmrow <- \(x) cat(paste0(x, collapse = " & "), "\\\\\n")
+  cat("$$\n", "\\begin{bmatrix}", "\n", sep = "")
+  body <- apply(mat, 1, printmrow)
+  cat("\\end{bmatrix}", "\n$$", sep = "")
+}
