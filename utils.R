@@ -4,7 +4,7 @@
 
 "%ni%" <- Negate("%in%")
 
-%s+% <- function(lhs, rhs) paste0(lhs, rhs)
+"%s+%" <- function(lhs, rhs) paste0(lhs, rhs)
 
 get_stars <- function(expr, p.val) {ifelse(expr == regulation_type$NOT_REG, "", gtools::stars.pval(p.val))}
 
