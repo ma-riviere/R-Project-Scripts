@@ -8,7 +8,21 @@
 
 get_stars <- function(expr, p.val) {ifelse(expr == regulation_type$NOT_REG, "", gtools::stars.pval(p.val))}
 
-recode_factor <- function(fctr) return(car::Recode(fctr, glue::glue_collapse(glue::glue("'{levels(fctr)}' = {as.vector(contrasts(fctr)[,1])}"), sep = "; ") |> as_string()))
+poly_encoding <- function(fctr) {
+  contrasts(fctr) <- contr.poly
+  return(
+    car::Recode(fctr, glue::glue_collapse(glue::glue("'{levels(fctr)}' = {as.vector(contrasts(fctr)[,1])}"), sep = "; ") |> as_string()) |> 
+      as.character() |> 
+      as.numeric()
+  )
+}
+
+label_encoding <- function(var) {
+  vals <- unique(var)
+  car::Recode(var, glue::glue_collapse(glue::glue("'{vals}' = {as.vector(seq.int(1, length(vals)))}"), sep = "; ") |> as_string()) |> 
+      as.character() |> 
+      as.numeric()
+}
 
 ### From: https://michaelbarrowman.co.uk/post/getting-a-variable-name-in-a-pipeline/
 
