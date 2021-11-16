@@ -29,15 +29,10 @@ knitr::opts_chunk$set(
   # cache.extra = list(R.version.string, knitr::rand_seed),
   fig.align = "center",
   fig.retina = 3,
-  fig.width = 10,
+  # fig.width = 10,
   dpi = 600,
-  dev = 'svg',
+  dev = 'png', # svg
   dev.args = list(bg = "transparent")
-)
-
-knitr::opts_knit$set(
-  root.dir = here::here(),
-  verbose = FALSE
 )
 
 #-----------------------#

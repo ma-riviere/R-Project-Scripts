@@ -3,6 +3,7 @@
 #========================#
 
 base_pkgs <- c("renv", "here", "config", "gert", "knitr", "rmarkdown", "ggplot2", "crayon", "usethis")
+suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 
 options(
   pkgType = ifelse(Sys.info()[["sysname"]] == "Windows", "both", "source"),
@@ -12,8 +13,6 @@ options(
 )
 
 Sys.setenv(MAKEFLAGS = paste0("-j", getOption("Ncpus")))
-
-suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 
 #---------------------#
 #### Main function ####
@@ -31,11 +30,10 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
     cat(note("\n[PACKAGES] Updating submodules ...\n"))
     update_submodules()
     
-    if (any(c("rstan", "cmdstanr") %in% strsplit(project_pkgs, "/"))) 
-      options(repos = c(STAN = "https://mc-stan.org/r-packages/", CRAN = "https://cloud.r-project.org/"))
-    
     cat(note("\n[PACKAGES] Configuring GITHUB access ...\n"))
     configure_git()
+
+    options(repos = project_repos)
     
     cat(note("\n[PACKAGES] Installing project packages ...\n"))
     install_packages(project_pkgs)
@@ -79,9 +77,9 @@ init_base_packages <- function() {
   
   main <<- crayon::magenta$bold
   note <<- crayon::blue
-  error <<- crayon::red
   warn <<- crayon::yellow
-  
+  error <<- crayon::red
+    
   load_packages(base_pkgs)
   
   cat(main("\n[PACKAGES] Base packages installed.\n"))
