@@ -73,10 +73,10 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
 }
 
 init_base_packages <- function() {
+  log.title("[PACKAGES] Installing base packages ...\n")
+
   install_packages(base_pkgs)
   load_packages(base_pkgs)
-  
-  log.title("[PACKAGES] Base packages installed.")
 }
 
 #------------------------#
