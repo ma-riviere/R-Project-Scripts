@@ -2,10 +2,8 @@
 #### Packages Manager ####
 #========================#
 
-base_pkgs <- c("renv", "here", "config", "gert", "knitr", "rmarkdown", "ggplot2", "crayon", "usethis")
-suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
-
 options(
+  repos = project_repos,
   pkgType = ifelse(Sys.info()[["sysname"]] == "Windows", "both", "source"),
   Ncpus = max(1, parallel::detectCores(logical = TRUE) - 1),
   # install.packages.check.source = "no",
@@ -13,6 +11,8 @@ options(
 )
 
 Sys.setenv(MAKEFLAGS = paste0("-j", getOption("Ncpus")))
+
+suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 
 #---------------------#
 #### Main function ####
@@ -27,13 +27,13 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
       renv::clean(prompt = FALSE)
     }
     
-    log.title("[PACKAGES] Updating submodules ...")
-    update_submodules()
+    # log.title("[PACKAGES] Updating submodules ...")
+    # update_submodules()
     
     log.title("[PACKAGES] Configuring GITHUB access ...")
     configure_git()
 
-    options(repos = project_repos)
+    
     
     log.title("[PACKAGES] Installing project packages ...")
     install_packages(project_pkgs)

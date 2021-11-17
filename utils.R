@@ -8,26 +8,16 @@ log.title("[UTILS] Loading Utils ...")
 
 "%s+%" <- function(lhs, rhs) paste0(lhs, rhs)
 
-get_stars <- function(expr, p.val) {ifelse(expr == regulation_type$NOT_REG, "", gtools::stars.pval(p.val))}
-
-poly_encoding <- function(fctr) {
-  contrasts(fctr) <- contr.poly
-  return(
-    car::Recode(fctr, glue::glue_collapse(glue::glue("'{levels(fctr)}' = {as.vector(contrasts(fctr)[,1])}"), sep = "; ") |> as_string()) |> 
-      as.character() |> 
-      as.numeric()
-  )
-}
-
-label_encoding <- function(var) {
-  vals <- unique(var)
-  car::Recode(var, glue::glue_collapse(glue::glue("'{vals}' = {as.vector(seq.int(1, length(vals)))}"), sep = "; ") |> as_string()) |> 
-      as.character() |> 
-      as.numeric()
+update_submodules <- function() {
+  if(Sys.info()[["sysname"]] == "Linux") {
+    system(glue::glue("chmod +x {here::here('update_submodules.sh')}"), intern = TRUE)
+    system("#!/bin/sh", intern = TRUE)
+    system(here::here("update_submodules.sh"), intern = TRUE)
+  }
+  else if(Sys.info()[["sysname"]] == "Windows") system(here::here("update_submodules.bat"), intern = TRUE)
 }
 
 ### From: https://michaelbarrowman.co.uk/post/getting-a-variable-name-in-a-pipeline/
-
 get_var_name <- function(x) {
   lhs <- get_lhs()
   if(is.null(lhs)) lhs <- rlang::ensym(x)
@@ -63,6 +53,10 @@ get_lhs <- function() {
   }
 }
 
+get_current_file_name <- function() {
+  rstudioapi::getActiveDocumentContext()$path |> str_split(pattern = "/") |> first() |> last() |> str_split("[.]") |> first() |> first()
+}
+
 ### From: https://gist.github.com/alexpghayes/9118cda66375e593343fe28c8d13fdb5
 # Upload a data frame to google drive, make it shareable, and copy the shareable link into the clipboard
 # See: https://googledrive.tidyverse.org/
@@ -85,13 +79,6 @@ get_shareable_link_to_data <- function(data, path, direct = TRUE) {
   invisible(link)
 }
 
-hush <- function(output){
-  sink("NUL")
-  temp <- output
-  sink()
-  return(temp)
-}
-
 save_png <- function(plot, filename = NULL, subfolder = "", dpi = 600, width = 8, height = 8, display = TRUE) {
   if(is.null(filename)) filename <- as.list(match.call()[-1])$plot
   
@@ -103,10 +90,6 @@ save_png <- function(plot, filename = NULL, subfolder = "", dpi = 600, width = 8
   
   ggsave(filename = file_path, plot = plot, device = "png", scale = 1, dpi = dpi, width = width, height = height)
   if(display) return(plot)
-}
-
-get_current_file_name <- function() {
-  rstudioapi::getActiveDocumentContext()$path |> str_split(pattern = "/") |> first() |> last() |> str_split("[.]") |> first() |> first()
 }
 
 ## Get element by name from list:
@@ -127,4 +110,28 @@ matrix2latex <- function(mat) {
   cat("$$\n", "\\begin{bmatrix}", "\n", sep = "")
   body <- apply(mat, 1, printmrow)
   cat("\\end{bmatrix}", "\n$$", sep = "")
+}
+
+#-------------------#
+#### Stats Utils ####
+#-------------------#
+
+get_stars <- function(expr, p.val) {
+  return(ifelse(expr == regulation_type$NOT_REG, "", gtools::stars.pval(p.val)))
+}
+
+poly_encoding <- function(fctr) {
+  contrasts(fctr) <- contr.poly
+  return(
+    car::Recode(fctr, glue::glue_collapse(glue::glue("'{levels(fctr)}' = {as.vector(contrasts(fctr)[,1])}"), sep = "; ") |> as_string()) |> 
+      as.character() |> 
+      as.numeric()
+  )
+}
+
+label_encoding <- function(var) {
+  vals <- unique(var)
+  car::Recode(var, glue::glue_collapse(glue::glue("'{vals}' = {as.vector(seq.int(1, length(vals)))}"), sep = "; ") |> as_string()) |> 
+    as.character() |> 
+    as.numeric()
 }
