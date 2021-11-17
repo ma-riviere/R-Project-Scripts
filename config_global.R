@@ -2,7 +2,7 @@
 #### Global Config ####
 #=====================#
 
-cat(main("\n[CONFIG] Loading Global Configs ...\n"))
+log.title("[CONFIG] Loading Global Configs ...")
 
 Sys.setenv("_R_CHECK_LENGTH_1_LOGIC2_" = "false")
 Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "false")
@@ -45,21 +45,21 @@ load_global_config <- function() {
     error = \(e) return(NULL)
   )
   
-  if(!is.null(global_config)) cat(note("\n[CONFIG] Global config file found.\n"))
-  else cat(warn("\n[CONFIG] No global config file found.\n"))
+  if(!is.null(global_config)) log.note("[CONFIG] Global config file found.")
+  else log.warn("[CONFIG] No global config file found.")
   
   return(global_config)
 }
 
 configure_git <- function() {
   if(Sys.getenv("GITHUB_PAT") != "") {
-    cat(note("\n[CONFIG] GITHUB Access Token found: ", Sys.getenv("GITHUB_PAT"), "\n"))
+    log.note("[CONFIG] GITHUB Access Token found: ", Sys.getenv("GITHUB_PAT"))
   }
   else if (!is.null(global_config$github_pat) && global_config$github_pat != "") {
-    cat(note("\n[CONFIG] GITHUB Access Token found: ", global_config$github_pat, "\n"))
+    log.note("[CONFIG] GITHUB Access Token found: ", global_config$github_pat)
     Sys.setenv(GITHUB_PAT = global_config$github_pat)
   }
-  else cat(warn("\n[CONFIG] GITHUB Access Token NOT found - package loading might fail due to Github API's download cap.\n"))
+  else log.warn("[CONFIG] GITHUB Access Token NOT found - package loading might fail due to Github API's download cap.")
 }
 
 configure_packages <- function() {
@@ -113,10 +113,10 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = NULL) {
     
     ## Initialization
     
-    cat(note("\n[CONFIG] Setting up CmdStan ...\n"))
+    log.note("[CONFIG] Setting up CmdStan ...")
     
     if(is.null(version)) version <- gh::gh("GET /repos/stan-dev/cmdstan/releases/latest")[["tag_name"]] |> substring(2)
-    cat(note("\n[CONFIG] Using CmdStan version: ", version, "\n"))
+    log.note("[CONFIG] Using CmdStan version: ", version)
     
     ### INFO: If env.var "CMDSTAN" exists, then its value will be automatically set as the default path to CmdStan for the R session
     
@@ -155,14 +155,14 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = NULL) {
             CUDA_PATH <- normalizePath(file.path(Sys.getenv("CUDA_PATH"), "/lib/x64"))
             
             if(dir.exists(CUDA_PATH)) {
-              cat(note("\n[CONFIG] Found existing CUDA_PATH: ", CUDA_PATH, "\n"))
+              log.note("[CONFIG] Found existing CUDA_PATH: ", CUDA_PATH)
               cpp_opts_cl <- append(cpp_opts_cl, paste0("LDFLAGS_OPENCL=-L\"", CUDA_PATH, "\" -lOpenCL"))
               cpp_opts <- append(cpp_opts, cpp_opts_cl)
             }
-            else cat(warn("\n[CONFIG] The specified CUDA path does not exist.\n"))
+            else log.warn("[CONFIG] The specified CUDA path does not exist.")
           } 
           else {
-            cat(warn("\n[CONFIG] No CUDA_PATH specified in the environment variables.\n"))
+            log.warn("[CONFIG] No CUDA_PATH specified in the environment variables.")
           }
         }
       }

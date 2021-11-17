@@ -2,7 +2,7 @@
 #### Theme ####
 #=============#
 
-cat(note("\n[CONFIG] Setting custom ggplot theme ...\n"))
+log.main("[CONFIG] Setting custom ggplot theme ...")
 
 invis_custom <- ggplot2::theme_minimal() +
   ggplot2::theme(

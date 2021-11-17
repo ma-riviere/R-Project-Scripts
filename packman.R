@@ -23,25 +23,25 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
   if(update) {
 
     if(clean) {
-      cat(note("\n[PACKAGES] Cleaning illegal project packages ...\n"))
+      log.main("[PACKAGES] Cleaning illegal project packages ...")
       renv::clean(prompt = FALSE)
     }
     
-    cat(note("\n[PACKAGES] Updating submodules ...\n"))
+    log.title("[PACKAGES] Updating submodules ...")
     update_submodules()
     
-    cat(note("\n[PACKAGES] Configuring GITHUB access ...\n"))
+    log.title("[PACKAGES] Configuring GITHUB access ...")
     configure_git()
 
     options(repos = project_repos)
     
-    cat(note("\n[PACKAGES] Installing project packages ...\n"))
+    log.title("[PACKAGES] Installing project packages ...")
     install_packages(project_pkgs)
     
-    cat(note("\n[PACKAGES] Loading project packages ...\n"))
+    log.main("[PACKAGES] Loading project packages ...")
     load_packages(project_pkgs)
     
-    cat(note("\n[PACKAGES] Indexing project packages ...\n\n"))
+    log.main("[PACKAGES] Indexing project packages ...\n")
     if(file.exists(here::here("DESCRIPTION"))) file.remove(here::here("DESCRIPTION"))
     
     usethis::use_description(
@@ -63,26 +63,20 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
     renv::snapshot(type = "explicit", prompt = FALSE)
     
   } else {
-    cat(note("\n[PACKAGES] Restoring project packages ...\n"))
+    log.title("[PACKAGES] Restoring project packages ...")
     renv::restore(prompt = FALSE)
     load_packages(project_pkgs)
   }
   
-  cat(note("\n[PACKAGES] Configuring project's packages ...\n"))
+  log.title("[PACKAGES] Configuring project's packages ...")
   configure_packages()
 }
 
 init_base_packages <- function() {
   install_packages(base_pkgs)
-  
-  main <<- crayon::magenta$bold
-  note <<- crayon::blue
-  warn <<- crayon::yellow
-  error <<- crayon::red
-    
   load_packages(base_pkgs)
   
-  cat(main("\n[PACKAGES] Base packages installed.\n"))
+  log.title("[PACKAGES] Base packages installed.")
 }
 
 #------------------------#
@@ -130,7 +124,14 @@ should_install <- function(pkg) {
 install_packages <- function(pkgs) {
   suppressPackageStartupMessages({
     for (pkg in pkgs) {
-      if (should_install(pkg)) renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE)
+      if (should_install(pkg)) {
+        tryCatch({
+          renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE)
+        }, error = function(e) {
+          log.warn("[PACKAGES] Error installing package", pkg, "from source. Attempting binary install ...\n")
+          renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE, type = "binary")
+        })
+      }
     }
   })
 }

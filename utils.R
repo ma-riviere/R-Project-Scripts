@@ -2,6 +2,8 @@
 #### Miscellaneous functions ####
 #===============================#
 
+log.title("[UTILS] Loading Utils ...")
+
 "%ni%" <- Negate("%in%")
 
 "%s+%" <- function(lhs, rhs) paste0(lhs, rhs)
