@@ -23,13 +23,13 @@ log.note <- function(...) {
 }
 
 log.warn <- function(...) {
-  msg <- paste0(...)
+  msg <- paste0("[WARN]", ...)
   if(suppressWarnings({library(crayon, logical.return = TRUE)})) msg <- crayon::yellow(msg)
-  return(cat("\n[WARN]", msg, "\n"))
+  return(cat("\n", msg, "\n"))
 }
 
 log.error <- function(...) {
-  msg <- paste0(...)
+  msg <- paste0("[ERROR]", ...)
   if(suppressWarnings({library(crayon, logical.return = TRUE)})) msg <- crayon::red$bold(msg)
-  return(cat("\n[ERROR]", msg, "\n"))
+  return(cat("\n", msg, "\n"))
 }
