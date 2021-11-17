@@ -91,12 +91,12 @@ init_base_packages <- function() {
 
 get_pkg_name <- function(pkg) {
   pkg_name <- pkg
-  if (grepl("/", pkg, fixed = TRUE)) {
-    pkg_path <- strsplit(pkg, "/", fixed = TRUE)[[1]]
+  if (grepl("/", pkg_name, fixed = TRUE)) {
+    pkg_path <- strsplit(pkg_name, "/", fixed = TRUE)[[1]]
     pkg_name <- pkg_path[length(pkg_path)]
   }
   if (grepl("@", pkg_name, fixed = TRUE)) {
-    pkg_path <- strsplit(pkg, "@", fixed = TRUE)[[1]]
+    pkg_path <- strsplit(pkg_name, "@", fixed = TRUE)[[1]]
     pkg_name <- pkg_path[1]
   }
   return(pkg_name)
