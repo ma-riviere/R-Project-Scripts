@@ -32,8 +32,6 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
     
     log.title("[PACKAGES] Configuring GITHUB access ...")
     configure_git()
-
-    
     
     log.title("[PACKAGES] Installing project packages ...\n")
     install_packages(project_pkgs)
@@ -115,7 +113,7 @@ is_installed <- function(pkg) {
 should_install <- function(pkg) {
   pkg_name <- get_pkg_name(pkg)
   if (is_installed(pkg_name)) {
-    if(get_pkg_version(pkg) != "0.0.0" && utils::packageVersion(pkg_name) != get_pkg_version(pkg)) return(TRUE)
+    if(get_pkg_version(pkg) != "0.0.0" && !is.na(numeric_version(pkg, strict = FALSE)) && utils::packageVersion(pkg_name) != get_pkg_version(pkg)) return(TRUE)
     return(FALSE) 
   }
   return(TRUE)
