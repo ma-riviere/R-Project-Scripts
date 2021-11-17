@@ -35,7 +35,7 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
 
     
     
-    log.title("[PACKAGES] Installing project packages ...")
+    log.title("[PACKAGES] Installing project packages ...\n")
     install_packages(project_pkgs)
     
     log.main("[PACKAGES] Loading project packages ...")
@@ -128,7 +128,7 @@ install_packages <- function(pkgs) {
         tryCatch({
           renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE)
         }, error = function(e) {
-          log.warn("[PACKAGES] Error installing package", pkg, "from source. Attempting binary install ...\n")
+          log.warn("[PACKAGES] Error installing package `", pkg, "` from source. Attempting binary install ...\n")
           renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE, type = "binary")
         })
       }
