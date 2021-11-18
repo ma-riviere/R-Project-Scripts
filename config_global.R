@@ -68,7 +68,7 @@ configure_packages <- function() {
   
   if ("ggplot2" %in% installed_packages) {
     
-    invis_custom <- ggplot2::theme_minimal() +
+    invis_custom <<- ggplot2::theme_minimal() +
       ggplot2::theme(
         plot.background = element_rect(fill = "transparent", colour = NA),
         panel.background = element_rect(fill = "transparent", colour = NA),
@@ -79,7 +79,7 @@ configure_packages <- function() {
         panel.grid.minor = element_blank()
       )
     
-    custom_light <- invis_custom + 
+    custom_light <<- invis_custom + 
       ggplot2::theme(
         panel.border = element_rect(fill = NA, colour = "black"),
         ## Titles
