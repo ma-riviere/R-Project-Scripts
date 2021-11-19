@@ -31,8 +31,8 @@ knitr::opts_chunk$set(
   fig.retina = 3,
   # fig.width = 10,
   dpi = 600,
-  dev = 'png', # svg
-  dev.args = list(bg = "transparent")
+  dev = 'png' # svg
+  # dev.args = list(bg = "transparent")
 )
 
 #-----------------------#
