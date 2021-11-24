@@ -141,7 +141,7 @@ configure_packages <- function() {
   
 }
 
-configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = NULL) {
+configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, MKL = FALSE) {
   
   if("cmdstanr" %in% get_renv_installed_pkgs()) {
     
@@ -175,6 +175,20 @@ configure_stan <- function(rebuild = FALSE, openCL = FALSE, version = NULL) {
       Sys.setenv(HOME = cmdstan_root)
       
       cpp_opts <- list(STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE)
+
+      ## TODO:
+      if (MKL) {
+        MKLLIBS <- "//usr/lib/x86_64-linux-gnu"
+        MKLROOT <- "//usr/include/mkl"
+        
+        cpp_opts_mkl <- c(
+          glue("CXXFLAGS += -DEIGEN_USE_MKL_ALL  -m64 -I${MKLROOT}"),
+          glue("CXX14FLAGS  += -DEIGEN_USE_MKL_ALL  -m64 -I${MKLROOT}"),
+          glue("LDLIBS += -Wl,--start-group ${MKLLIBS}/libmkl_intel_lp64.a ${MKLLIBS}/libmkl_sequential.a ${MKLLIBS}/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl")
+        )
+
+        cpp_opts <- append(cpp_opts, cpp_opts_mkl)
+      }
       
       ### OpenCL params
       if (openCL) {
