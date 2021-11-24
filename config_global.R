@@ -182,9 +182,9 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, MKL 
         MKLROOT <- "//usr/include/mkl"
         
         cpp_opts_mkl <- c(
-          glue("CXXFLAGS += -DEIGEN_USE_MKL_ALL  -m64 -I${MKLROOT}"),
-          glue("CXX14FLAGS  += -DEIGEN_USE_MKL_ALL  -m64 -I${MKLROOT}"),
-          glue("LDLIBS += -Wl,--start-group ${MKLLIBS}/libmkl_intel_lp64.a ${MKLLIBS}/libmkl_sequential.a ${MKLLIBS}/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl")
+          glue("CXXFLAGS += -DEIGEN_USE_MKL_ALL -m64 -I${MKLROOT}"),
+          glue("CXX14FLAGS += -DEIGEN_USE_MKL_ALL -m64 -I${MKLROOT}"),
+          glue("LDFLAGS += -Wl,--start-group ${MKLLIBS}/libmkl_intel_lp64.a ${MKLLIBS}/libmkl_sequential.a ${MKLLIBS}/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl")
         )
 
         cpp_opts <- append(cpp_opts, cpp_opts_mkl)
