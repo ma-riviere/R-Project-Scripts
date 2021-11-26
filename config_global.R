@@ -141,7 +141,7 @@ configure_packages <- function() {
   
 }
 
-configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, MKL = FALSE) {
+configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS = FALSE) {
   
   if("cmdstanr" %in% get_renv_installed_pkgs()) {
     
@@ -177,17 +177,17 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, MKL 
       cpp_opts <- list(STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE)
 
       ## TODO:
-      if (MKL) {
-        MKLLIBS <- "//usr/lib/x86_64-linux-gnu"
-        MKLROOT <- "//usr/include/mkl"
+      if (BLAS) {
+        # MKLROOT <- "//usr/include/mkl"
         
-        cpp_opts_mkl <- c(
-          glue("CXXFLAGS += -DEIGEN_USE_MKL_ALL -m64 -I${MKLROOT}"),
-          glue("CXX14FLAGS += -DEIGEN_USE_MKL_ALL -m64 -I${MKLROOT}"),
-          glue("LDFLAGS += -Wl,--start-group ${MKLLIBS}/libmkl_intel_lp64.a ${MKLLIBS}/libmkl_sequential.a ${MKLLIBS}/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl")
-        )
+        cpp_opts_blas <- list("CXXFLAGS += -DEIGEN_USE_BLAS -DEIGEN_USE_LAPACKE", "LDLIBS += -lblas -llapack -llapacke")
 
-        cpp_opts <- append(cpp_opts, cpp_opts_mkl)
+        # cpp_opts_mkl <- list(
+        #   glue("CXXFLAGS += -DEIGEN_USE_MKL_ALL -I${MKLROOT}"),
+        #   "LDLIBS += -lmkl_intel_lp64 -lmkl_sequential -lmkl_core" # TODO: use parallel threads instead of sequential ?
+        # )
+
+        cpp_opts <- append(cpp_opts, cpp_opts_blas) # cpp_opts_mkl (to add to _blas)
       }
       
       ### OpenCL params
