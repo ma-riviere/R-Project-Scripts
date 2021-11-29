@@ -174,8 +174,12 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       OLD_HOME <- Sys.getenv("HOME")
       Sys.setenv(HOME = cmdstan_root)
       
-      cpp_opts <- list(STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE)
+      cpp_opts <- list(
+        STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE,
+        "CXXFLAGS += -O3 -march=native -mtune=native"
+      )
 
+      ### BLAS params
       if (!is.null(BLAS)) {
         
         if(BLAS == "MKL") {
