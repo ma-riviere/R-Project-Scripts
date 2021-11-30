@@ -176,7 +176,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       
       cpp_opts <- list(
         STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE,
-        "CXXFLAGS += -O3 -march=native -mtune=native"
+        "CXXFLAGS += -O3 -march=native -mtune=native" # TODO: if issues on Windows -> CXXFLAGS += -march=native
       )
 
       ### BLAS params
@@ -257,6 +257,8 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       CMDSTAN_TBB <- normalizePath(file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb"))
       Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
     }
+
+    Sys.setenv("OPENBLAS_NUM_THREADS" = 1)
     
     options(brms.backend = "cmdstanr")
   }
