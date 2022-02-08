@@ -18,14 +18,14 @@ suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 #### Main function ####
 #---------------------#
 
-init_project_packages <- function(update = FALSE, clean = TRUE) {
-    
-  if(update) {
-
-    if(clean) {
-      log.main("[PACKAGES] Cleaning illegal project packages ...")
-      renv::clean(prompt = FALSE)
-    }
+init_project_packages <- function(install = FALSE, update = FALSE, clean = FALSE) {
+  
+  if (clean) {
+    log.main("[PACKAGES] Cleaning illegal project packages ...")
+    renv::clean(prompt = FALSE)
+  }
+  
+  if (install || update) {
     
     # log.title("[PACKAGES] Updating submodules ...")
     # update_submodules()
@@ -33,10 +33,20 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
     log.title("[PACKAGES] Configuring GITHUB access ...")
     configure_git()
     
-    log.title("[PACKAGES] Installing project packages ...\n")
-    install_packages(project_pkgs)
+    # INSTALL -> compare to list of packages and install non-installed ones
+    if (install) {
+      # TODO: rework should install
+      log.title("[PACKAGES] Installing project packages ...")
+      install_packages(project_pkgs)
+    }
     
-    log.main("[PACKAGES] Loading project packages ...")
+    # UPDATE -> update intalled packages to latest version
+    if (update) {
+      log.title("[PACKAGES] Updating project packages ...")
+      update_packages(project_pkgs)
+    }
+    
+    log.main("[PACKAGES] Loading project packages into global environment ...\n")
     load_packages(project_pkgs)
     
     log.main("[PACKAGES] Indexing project packages ...\n")
@@ -55,6 +65,7 @@ init_project_packages <- function(update = FALSE, clean = TRUE) {
       check_name = FALSE
     )
     usethis::use_mit_license("Marc-Aurele RIVIERE")
+    
     add_packages_to_description(c(base_pkgs, project_pkgs))
     
     ## Updating renv.lock
@@ -99,7 +110,7 @@ get_pkg_version <- function(pkg) {
     pkg_path <- strsplit(pkg, split = "@", fixed = TRUE)[[1]]
     return(pkg_path[length(pkg_path)])
   }
-  return("0.0.0")
+  return(NA_character_)
 }
 
 get_renv_installed_pkgs <- function() {
@@ -110,11 +121,14 @@ is_installed <- function(pkg) {
   return(pkg %in% get_renv_installed_pkgs())
 }
 
-should_install <- function(pkg) {
-  pkg_name <- get_pkg_name(pkg)
-  if (is_installed(pkg_name)) {
-    if(get_pkg_version(pkg) != "0.0.0" && !is.na(numeric_version(pkg, strict = FALSE)) && utils::packageVersion(pkg_name) != get_pkg_version(pkg)) return(TRUE)
-    return(FALSE) 
+has_min_required_version <- function(pkg) {
+  required_pkg_version <- get_pkg_version(pkg)
+  ## Will return NA if the package has no declared version in the packages list, or if the version is not a correct version "number"
+  if (!is.na(numeric_version(required_pkg_version, strict = FALSE))) {
+    ## Will return -1 if current version is < required version
+    if (utils::compareVersion(utils::packageVersion(get_pkg_name(pkg)), required_pkg_version) == -1) {
+      return(FALSE)
+    }
   }
   return(TRUE)
 }
@@ -122,15 +136,26 @@ should_install <- function(pkg) {
 install_packages <- function(pkgs) {
   suppressPackageStartupMessages({
     for (pkg in pkgs) {
-      if (should_install(pkg)) {
-        tryCatch({
-          renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE)
-        }, error = function(e) {
-          log.warn("[PACKAGES] Error installing package `", pkg, "` from source. Attempting binary install ...\n")
-          renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE, type = "binary")
-        })
-      }
+      pkg_name <- get_pkg_name(pkg)
+      if (!is_installed(pkg_name)) install_package(pkg)
+      else if (!has_min_required_version(pkg)) install_package(pkg)
     }
+  })
+}
+
+install_package <- function(pkg) {
+  tryCatch({
+    renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE)
+  }, error = function(e) {
+    log.warn("[PACKAGES] Error installing package `", pkg, "` from source. Attempting binary install ...\n")
+    renv::install(packages = pkg, prompt = FALSE, build_vignettes = FALSE, type = "binary")
+  })
+}
+
+update_packages <- function(pkgs) {
+  suppressPackageStartupMessages({
+    # pkgs_names <- lapply(project_pkgs, FUN = get_pkg_name) |> unlist()
+    renv::update(packages = NULL, prompt = FALSE) # packages = pkgs_names --> only update pkgs from list
   })
 }
 

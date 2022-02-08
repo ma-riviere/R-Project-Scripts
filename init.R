@@ -36,9 +36,9 @@ global_config <- load_global_config()
 #### Project-specific scripts ####
 #--------------------------------#
 
-setup_project <- function(update = FALSE) {
+setup_project <- function(...) {
 
-  init_project_packages(update = update)
+  init_project_packages(...)
 
   source(here::here("src", "config_project.R"), echo = F)
 
