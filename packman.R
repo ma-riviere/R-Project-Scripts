@@ -73,7 +73,7 @@ init_project_packages <- function(install = FALSE, update = FALSE, clean = FALSE
     
   } else {
     log.title("[PACKAGES] Restoring project packages ...")
-    renv::restore(prompt = FALSE)
+    renv::restore(prompt = FALSE, repos = project_repos)
     load_packages(project_pkgs)
   }
   
