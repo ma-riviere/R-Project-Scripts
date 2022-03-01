@@ -104,8 +104,8 @@ configure_packages <- function() {
         ## Axes
         axis.title.x = ggtext::element_markdown(face = "bold", hjust = 0.5),
         axis.title.y = ggtext::element_markdown(face = "bold", hjust = 0.5),
-        axis.text = ggtext::element_markdown(colour = "black"),
-        text = ggtext::element_markdown(colour = "black")
+        axis.text = element_text(color = "black"),
+        text = element_text(color = "black")
       )
     
     ggplot2::theme_set(custom_light)
