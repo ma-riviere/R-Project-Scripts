@@ -35,6 +35,12 @@ knitr::opts_chunk$set(
   # dev.args = list(bg = "transparent")
 )
 
+#---------------#
+#### Masking ####
+#---------------#
+
+get <- base::get
+
 #-----------------------#
 #### Package options ####
 #-----------------------#
