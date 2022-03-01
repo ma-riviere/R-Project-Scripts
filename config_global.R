@@ -100,7 +100,7 @@ configure_packages <- function() {
         legend.title = ggtext::element_markdown(face = "bold"),
         ## Facets
         strip.background = element_rect(fill = "#ffed75"),
-        strip.text = ggtext::element_markdown(size = 10, face = "bold"),
+        strip.text = element_text(size = 10, face = "bold"),
         ## Axes
         axis.title.x = ggtext::element_markdown(face = "bold", hjust = 0.5),
         axis.title.y = ggtext::element_markdown(face = "bold", hjust = 0.5),
