@@ -94,18 +94,18 @@ configure_packages <- function() {
       ggplot2::theme(
         panel.border = element_rect(fill = NA, colour = "black"),
         ## Titles
-        plot.title = element_text(size = 12, face = "bold"),
-        plot.subtitle = element_text(size = 11, face = "italic"),
+        plot.title = ggtext::element_markdown(size = 12, face = "bold"),
+        plot.subtitle = ggtext::element_markdown(size = 11, face = "italic"),
         ## Legend
-        legend.title = element_text(face = "bold"),
+        legend.title = ggtext::element_markdown(face = "bold"),
         ## Facets
         strip.background = element_rect(fill = "#ffed75"),
-        strip.text = element_text(size = 10, face = "bold"),
+        strip.text = ggtext::element_markdown(size = 10, face = "bold"),
         ## Axes
-        axis.title.x = element_text(face = "bold", hjust = 0.5),
-        axis.title.y = element_text(face = "bold", hjust = 0.5),
-        axis.text = element_text(colour = "black"),
-        text = element_text(colour = "black")
+        axis.title.x = ggtext::element_markdown(face = "bold", hjust = 0.5),
+        axis.title.y = ggtext::element_markdown(face = "bold", hjust = 0.5),
+        axis.text = ggtext::element_markdown(colour = "black"),
+        text = ggtext::element_markdown(colour = "black")
       )
     
     ggplot2::theme_set(custom_light)
