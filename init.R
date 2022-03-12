@@ -41,9 +41,13 @@ setup_project <- function(...) {
   init_project_packages(...)
 
   source(here::here("src", "config_project.R"), echo = F)
+  
+  log.main("[SETUP] Loading additional src scripts ...")
+  
+  project_scrips <- fs::dir_ls(path = here::here("src"), type = "file", glob = "*.R") |> fs::path_file()  # Loading data.R & co
 
   sapply(
-    Filter(\(i) i %ni% c("packages.R", "config_project.R"), list.files(here::here("src"), pattern = "*.R")), 
-    FUN = \(.x) source(here::here("src", .x), echo = F)
-  ) |> capture.output(file = 'NUL')
+    project_scrips[which(project_scrips %ni% c("packages.R", "config_project.R"))],
+    FUN = \(f) source(here::here("src", f), echo = F)
+  )
 }
