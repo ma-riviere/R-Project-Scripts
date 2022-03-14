@@ -11,7 +11,7 @@ Sys.setenv("_R_USE_PIPEBIND_" = "TRUE")
 options(
   scipen = 999L, 
   digits = 4L,
-  mc.cores = max(1, parallel::detectCores(logical = TRUE)),
+  mc.cores = max(1L, parallel::detectCores(logical = TRUE)),
   na.action = "na.omit",
   seed = 256
 )
@@ -149,7 +149,10 @@ configure_packages <- function() {
     my.lmer.control.params <<- lme4::lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE))
     my.glmer.control.params <<- lme4::glmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE))
   }
-  
+
+  if ("glmmTMB" %in% installed_packages) {
+    options(glmmTMB.cores = max(1L, parallel::detectCores(logical = FALSE)))
+  }
 }
 
 configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS = NULL) {
