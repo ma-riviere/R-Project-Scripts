@@ -171,7 +171,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     if (Sys.info()[["sysname"]] == "Windows") cmdstan_root <<- normalizePath("D:/Dev/SDK/")
     else if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <<- normalizePath("/home/mar/Dev/SDK/")
     
-    cmdstan_dir <- ".cmdstanr"
+    cmdstan_dir <- ".cmdstan"
     cmdstan_version <- paste0("cmdstan-", version)
     cmdstan_install_path <- normalizePath(file.path(cmdstan_root, cmdstan_dir))
     
