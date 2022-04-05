@@ -111,7 +111,7 @@ configure_packages <- function() {
     ggplot2::theme_set(custom_light)
   }
   
-  if ("rstan" %in% installed_packages) rstan::rstan_options(auto_write = TRUE)
+  # if ("rstan" %in% installed_packages) rstan::rstan_options(auto_write = TRUE)
   
   if ("loo" %in% installed_packages) options(loo.cores = getOption("mc.cores"))
   
