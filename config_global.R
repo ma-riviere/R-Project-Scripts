@@ -132,7 +132,7 @@ configure_packages <- function() {
       check_contrasts = FALSE,
       es_aov = "pes", # ges
       correction_aov = "HF",
-      emmeans_model  = "multivariate"
+      # emmeans_model  = "univariate"
     )
   }
   
