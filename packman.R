@@ -54,17 +54,16 @@ init_project_packages <- function(install = FALSE, update = FALSE, clean = FALSE
     
     usethis::use_description(
       fields = list(
-        `Authors@R` = 'person("Marc-Aurele", "RIVIERE", email = "ma.riviere987@gmail.com",
-          role = c("aut", "cre"),
-          comment = c(ORCID = "0000-0002-5108-3382", GITHUB = "https://github.com/ma-riviere"))',
+        `Authors@R` = project_authors,
         Title = "_",
+        Version = "1.0.0",
         Description = "_",
         Language =  "en"
       ),
       roxygen = FALSE,
       check_name = FALSE
     )
-    usethis::use_mit_license("Marc-Aurele RIVIERE")
+    usethis::use_mit_license(sapply(project_authors, \(s) paste(s$given, s$family)))
     
     add_packages_to_description(c(base_pkgs, project_pkgs))
     

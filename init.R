@@ -37,6 +37,8 @@ global_config <- load_global_config()
 #--------------------------------#
 
 setup_project <- function(...) {
+  
+  source(here::here("src", "authors.R"), echo = F)
 
   init_project_packages(...)
 

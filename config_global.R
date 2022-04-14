@@ -74,7 +74,10 @@ configure_packages <- function() {
 
   if ("rlang" %in% installed_packages && utils::compareVersion(utils::packageVersion("rlang") |> as.character(), "1.0.0") >= 0) {
     log.note("[CONFIG] Activating `rlang` new global trace")
-    rlang::global_entrace()
+    if (purrr::is_empty(globalCallingHandlers())) {
+      log.note("[CONFIG] Activating `rlang` new global trace")
+      rlang::global_entrace()
+    }
   }
   
   if ("ggplot2" %in% installed_packages) {
