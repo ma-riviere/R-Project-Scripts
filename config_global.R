@@ -100,7 +100,7 @@ configure_packages <- function() {
         plot.title = ggtext::element_markdown(size = 12, face = "bold"),
         plot.subtitle = ggtext::element_markdown(size = 11, face = "italic"),
         ## Legend
-        legend.title = ggtext::element_markdown(face = "bold"),
+        legend.title = element_text(face = "bold"),
         ## Facets
         strip.background = element_rect(fill = "#ffed75"),
         strip.text = element_text(size = 10, face = "bold"),
