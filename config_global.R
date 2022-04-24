@@ -21,12 +21,7 @@ set.seed(getOption("seed"))
 knitr::opts_chunk$set(
   collapse = TRUE,
   warning = FALSE,
-  echo = FALSE,
   message = FALSE,
-  cache = FALSE,
-  cache.comments = FALSE,
-  autodep = FALSE,
-  # cache.extra = list(R.version.string, knitr::rand_seed),
   fig.align = "center",
   fig.retina = 3,
   # fig.width = 10,
