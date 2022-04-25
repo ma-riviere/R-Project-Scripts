@@ -48,8 +48,8 @@ setup_project <- function(...) {
   
   project_scrips <- fs::dir_ls(path = here::here("src"), type = "file", glob = "*.R") |> fs::path_file()  # Loading data.R & co
 
-  sapply(
+  tmp <- sapply(
     project_scrips[which(project_scrips %ni% c("packages.R", "config_project.R"))],
-    FUN = \(f) source(here::here("src", f), echo = F)
+    FUN = \(f) source(here::here("src", f), verbose = FALSE, echo = FALSE)
   )
 }

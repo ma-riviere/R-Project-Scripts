@@ -66,14 +66,6 @@ configure_git <- function() {
 configure_packages <- function() {
   
   installed_packages <- get_renv_installed_pkgs()
-
-  if ("rlang" %in% installed_packages && utils::compareVersion(utils::packageVersion("rlang") |> as.character(), "1.0.0") >= 0) {
-    log.note("[CONFIG] Activating `rlang` new global trace")
-    if (purrr::is_empty(globalCallingHandlers())) {
-      log.note("[CONFIG] Activating `rlang` new global trace")
-      rlang::global_entrace()
-    }
-  }
   
   if ("ggplot2" %in% installed_packages) {
     
@@ -159,7 +151,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     
     ## Initialization
     
-    log.note("[CONFIG] Setting up CmdStan ...")
+    log.main("[CONFIG] Setting up CmdStan ...")
     
     if(is.null(version)) version <- gh::gh("GET /repos/stan-dev/cmdstan/releases/latest")[["tag_name"]] |> substring(2)
     log.note("[CONFIG] Using CmdStan version: ", version)
