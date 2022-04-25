@@ -2,11 +2,12 @@
 #### Packages Manager ####
 #========================#
 
+source(here::here("src", "packages.R"), echo = F)
+
 options(
   repos = project_repos,
   pkgType = ifelse(Sys.info()[["sysname"]] == "Windows", "both", "source"),
   Ncpus = max(1, parallel::detectCores(logical = TRUE) - 1),
-  # install.packages.check.source = "no",
   verbose = FALSE
 )
 
@@ -35,7 +36,6 @@ init_project_packages <- function(install = FALSE, update = FALSE, clean = FALSE
     
     # INSTALL -> compare to list of packages and install non-installed ones
     if (install) {
-      # TODO: rework should install
       log.title("[PACKAGES] Installing project packages ...")
       install_packages(project_pkgs)
     }
@@ -114,10 +114,6 @@ get_pkg_version <- function(pkg) {
 
 get_renv_installed_pkgs <- function() {
   return(list.dirs(renv::paths$library(), full.names = F, recursive = F))
-}
-
-is_installed <- function(pkg) {
-  return(pkg %in% get_renv_installed_pkgs())
 }
 
 has_min_required_version <- function(pkg) {

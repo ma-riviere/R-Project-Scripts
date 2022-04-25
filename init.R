@@ -4,15 +4,21 @@
 
 cat("\n[SETUP] Starting Project init ...\n")
 
-if(!"renv" %in% utils::installed.packages()) {install.packages("renv"); library(renv)}
+is_installed <- \(pkg) suppressMessages({require(pkg, quietly = TRUE, warn.conflicts = FALSE, character.only = TRUE)})
 
-if(is.null(renv::project())) {
-  renv::init(project = here::here(), bare = TRUE, restart = FALSE)
-  if(!file.exists(here::here("config.yml"))) {
-    file.create(here::here("config.yml"))
-    cat('default:\r  data: !expr here::here("data", "my_data.csv")\r', file = here::here("config.yml"))
-  }
-  # usethis::use_blank_slate(scope = "project") ## TODO: only once + no prompt ?
+if(!is_installed("here")) {install.packages("renv"); library(renv)}
+
+if(is.null(renv::project())) renv::init(project = here::here(), bare = TRUE, restart = FALSE)
+
+## Temporary fix for renv library path issue
+if (!startsWith(.libPaths()[1], here::here())) {
+  v <- paste0("R-", version$major, ".", strsplit(version$minor, ".", fixed = TRUE)[[1]][1])
+  renv::use(library = here::here("renv", "library", v, "x86_64-w64-mingw32"))
+}
+
+if(!file.exists(here::here("config.yml"))) {
+  file.create(here::here("config.yml"))
+  cat('default:\r  data: !expr here::here("data", "my_data.csv")\r', file = here::here("config.yml"))
 }
 
 if(!file.exists(here::here("secret.yml"))) {
@@ -24,11 +30,12 @@ com_path <- here::here("src", "common")
 
 source(here::here(com_path, "logger.R"), echo = F)
 source(here::here(com_path, "utils.R"), echo = F)
-source(here::here("src", "packages.R"), echo = F)
 source(here::here(com_path, "packman.R"), echo = F)
+
 init_base_packages()
 
 source(here::here(com_path, "config_global.R"), echo = F)
+
 global_config <- load_global_config()
 
 
@@ -50,6 +57,11 @@ setup_project <- function(...) {
 
   tmp <- sapply(
     project_scrips[which(project_scrips %ni% c("packages.R", "config_project.R"))],
-    FUN = \(f) source(here::here("src", f), verbose = FALSE, echo = FALSE)
+    \(f) source(here::here("src", f), verbose = FALSE, echo = FALSE)
   )
+  
+  source(here::here("src", "commons", "theme.R"), echo = F)
+  source(here::here("src", "commons", "stan.R"), echo = F)
+  
+  rm(tmp)
 }
