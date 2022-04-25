@@ -60,8 +60,8 @@ setup_project <- function(...) {
     \(f) source(here::here("src", f), verbose = FALSE, echo = FALSE)
   )
   
-  source(here::here("src", "commons", "theme.R"), echo = F)
-  source(here::here("src", "commons", "stan.R"), echo = F)
+  source(here::here("src", "common", "theme.R"), echo = F)
+  source(here::here("src", "common", "stan.R"), echo = F)
   
   rm(tmp)
 }
