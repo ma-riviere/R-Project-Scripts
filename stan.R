@@ -92,6 +92,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       ### Installation
       
       if (Sys.info()[["sysname"]] == "Windows") {
+        cmdstanr::check_cmdstan_toolchain(fix = TRUE)
         # cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
         
         cmdstan_archive_name <- paste0(cmdstan_version, ".tar.gz")
