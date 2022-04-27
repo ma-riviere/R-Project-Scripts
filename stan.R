@@ -115,13 +115,44 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       cmdstanr::set_cmdstan_path(cmdstan_path)
     }
     
-    if (Sys.info()[["sysname"]] == "Windows") {
-      CMDSTAN_TBB <- normalizePath(file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb"))
-      Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
-    }
+    # if (Sys.info()[["sysname"]] == "Windows") {
+      # CMDSTAN_TBB <- normalizePath(file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb"))
+      # Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
+    # }
     
     Sys.setenv("OPENBLAS_NUM_THREADS" = 1)
     
     options(brms.backend = "cmdstanr")
+
+    knitr::knit_engines$set(
+      cmdstan = function(options) {
+        output_var <- options$output.var
+        if (!is.character(output_var) || length(output_var) != 1L) {
+          stop(
+            "The chunk option output.var must be a character string ",
+            "providing a name for the returned `CmdStanModel` object."
+          )
+        }
+        if (options$eval) {
+          if (options$cache) {
+            cache_path <- options$cache.path
+            if (length(cache_path) == 0L || is.na(cache_path) || cache_path == "NA") 
+              cache_path <- ""
+            dir <- paste0(cache_path, options$label)
+          } else {
+            dir <- tempdir()
+          }
+          file <- cmdstanr::write_stan_file(options$code, dir = dir) # , force_overwrite = TRUE
+          mod <- cmdstanr::cmdstan_model(
+            file, 
+            cpp_options = list(stan_threads = TRUE), stanc_options = list("Oexperimental")
+          )
+          assign(output_var, mod, envir = knitr::knit_global())
+        }
+        options$engine <- "stan"
+        code <- paste(options$code, collapse = "\n")
+        knitr::engine_output(options, code, '')
+      }
+    )
   }
 }
