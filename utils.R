@@ -6,7 +6,9 @@ log.title("[UTILS] Loading Utils ...")
 
 "%ni%" <- Negate("%in%")
 
-"%s+%" <- function(lhs, rhs) paste0(lhs, rhs)
+"%s+%" <- \(lhs, rhs) paste0(lhs, rhs)
+
+"%ne%" <- \(lhs, rhs) if(is.null(lhs) || rlang::is_empty(lhs) || lhs == "") return(rhs) else return(lhs)
 
 update_submodules <- function() {
   if(Sys.info()[["sysname"]] == "Linux") {

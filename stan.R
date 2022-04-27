@@ -10,7 +10,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     
     log.main("[CONFIG] Setting up CmdStan ...")
     
-    if(is.null(version)) version <- gh::gh("GET /repos/stan-dev/cmdstan/releases/latest")[["tag_name"]] |> substring(2)
+    if(is.null(version)) version <- gh::gh("GET /repos/stan-dev/cmdstan/releases/latest", .token = global_config$github_pat %ne% Sys.getenv("GITHUB_PAT"))[["tag_name"]] |> substring(2)
     log.note("[CONFIG] Using CmdStan version: ", version)
     
     ### INFO: If env.var "CMDSTAN" exists, then its value will be automatically set as the default path to CmdStan for the R session
