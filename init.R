@@ -2,11 +2,18 @@
 #### Project Init ####
 #====================#
 
-cat("\n[SETUP] Starting Project init ...\n")
-
 is_installed <- \(pkg) suppressMessages({require(pkg, quietly = TRUE, warn.conflicts = FALSE, character.only = TRUE)})
 
-if(!is_installed("here")) {install.packages("renv"); library(renv)}
+if (!is_installed("here")) {install.packages("here"); require(here, quietly = TRUE)}
+
+com_path <- here::here("src", "common")
+source(here::here(com_path, "logger.R"), echo = F)
+
+log.title("[SETUP] Setting up the project ...\n")
+
+if (!is_installed("renv")) {install.packages("renv"); require(renv, quietly = TRUE)}
+
+here::i_am("src/common/init.R")
 
 if(is.null(renv::project())) renv::init(project = here::here(), bare = TRUE, restart = FALSE)
 
@@ -26,15 +33,15 @@ if(!file.exists(here::here("secret.yml"))) {
   cat('default:\r  api_key: ""\r', file = here::here("secret.yml"))
 }
 
-com_path <- here::here("src", "common")
+log.main("[SETUP] Loading common scripts ...")
 
-source(here::here(com_path, "logger.R"), echo = F)
-source(here::here(com_path, "utils.R"), echo = F)
-source(here::here(com_path, "packman.R"), echo = F)
+project_base_scripts <- c("logger.R", "utils.R", "packman.R")
+
+tmp <- sapply(project_base_scripts, \(f) source(here::here(com_path, f), echo = FALSE))
 
 init_base_packages()
 
-source(here::here(com_path, "config_global.R"), echo = F)
+source(here::here(com_path, "config_global.R"), echo = FALSE)
 
 global_config <- load_global_config()
 
@@ -45,13 +52,13 @@ global_config <- load_global_config()
 
 setup_project <- function(...) {
   
-  source(here::here("src", "authors.R"), echo = F)
+  source(here::here("src", "authors.R"), echo = FALSE)
 
   init_project_packages(...)
 
-  source(here::here("src", "config_project.R"), echo = F)
+  source(here::here("src", "config_project.R"), echo = FALSE)
   
-  log.main("[SETUP] Loading additional src scripts ...")
+  log.main("[SETUP] Loading project-specific scripts ...")
   
   project_scrips <- fs::dir_ls(path = here::here("src"), type = "file", glob = "*.R") |> fs::path_file()  # Loading data.R & co
 
@@ -60,8 +67,8 @@ setup_project <- function(...) {
     \(f) source(here::here("src", f), verbose = FALSE, echo = FALSE)
   )
   
-  source(here::here("src", "common", "theme.R"), echo = F)
-  source(here::here("src", "common", "stan.R"), echo = F)
+  source(here::here("src", "common", "theme.R"), echo = FALSE)
+  source(here::here("src", "common", "stan.R"), echo = FALSE)
   
   rm(tmp)
 }

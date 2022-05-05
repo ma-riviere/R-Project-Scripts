@@ -47,6 +47,7 @@ init_project_packages <- function(install = FALSE, update = FALSE, clean = FALSE
     }
     
     log.main("[PACKAGES] Loading project packages into global environment ...\n")
+    # pkgs <- names(jsonlite::fromJSON(here::here("renv.lock"))$Packages)
     load_packages(project_pkgs)
     
     log.main("[PACKAGES] Indexing project packages ...\n")

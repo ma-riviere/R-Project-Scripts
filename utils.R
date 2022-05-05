@@ -4,19 +4,66 @@
 
 log.title("[UTILS] Loading Utils ...")
 
+#-------------#
+#### Pipes ####
+#-------------#
+
 "%ni%" <- Negate("%in%")
 
 "%s+%" <- \(lhs, rhs) paste0(lhs, rhs)
 
 "%ne%" <- \(lhs, rhs) if(is.null(lhs) || rlang::is_empty(lhs) || lhs == "") return(rhs) else return(lhs)
 
-update_submodules <- function() {
-  if(Sys.info()[["sysname"]] == "Linux") {
-    system(glue::glue("chmod +x {here::here('update_submodules.sh')}"), intern = TRUE)
-    system("#!/bin/sh", intern = TRUE)
-    system(here::here("update_submodules.sh"), intern = TRUE)
+
+#--------------#
+#### Images ####
+#--------------#
+
+save_png <- function(plot, filename = NULL, subfolder = "", dpi = 600, width = 8, height = 8, display = TRUE) {
+  if(is.null(filename)) filename <- as.list(match.call()[-1])$plot
+  
+  file_path <- here("fig", paste0(filename, ".png"))
+  if(subfolder != "") {
+    if(!dir.exists(here::here("fig", subfolder))) dir.create(here::here("fig", subfolder))
+    file_path <- here("fig", subfolder, paste0(filename, ".png"))
   }
-  else if(Sys.info()[["sysname"]] == "Windows") system(here::here("update_submodules.bat"), intern = TRUE)
+  
+  ggsave(filename = file_path, plot = plot, device = "png", scale = 1, dpi = dpi, width = width, height = height)
+  if(display) return(plot)
+}
+
+#------------------#
+#### Name utils ####
+#------------------#
+
+format_pvalue <- \(p) glue::glue("{scales::pvalue(p)} {gtools::stars.pval(p) |> str_remove_all(fixed('.'))}")
+
+get_response_name <- function(var) {
+  if(exists(paste0(var, "_name"))) return(eval(parse(text = get_var_name(!!paste0(var, "_name")))))
+  else return(var)
+}
+
+get_model_family <- function(mod) {
+  family <- insight::get_family(mod)$family |> stringr::str_to_sentence()
+  link <- insight::get_family(mod)$link
+  
+  model_tag <- glue::glue("{family} ('{link}')")
+  
+  cov_struct <- stringr::str_match(insight::get_call(mod)$formula |> toString(), "\\s(\\w{2,3})\\(.*\\)")[[2]]
+  if (!is.null(cov_struct) && !is.na(cov_struct) && cov_struct != "") model_tag <- glue::glue("{model_tag} + {toupper(cov_struct)}")
+  
+  return(model_tag)
+}
+
+get_model_tag <- function(mod) {
+  resp <- insight::find_response(mod)
+  return(glue::glue("{resp} - {get_model_family(mod)}"))
+}
+
+print_model_call <- function(mod) {
+  cat("```{{r}}\n")
+  print(insight::get_call(mod))
+  cat("```\n")
 }
 
 ### From: https://michaelbarrowman.co.uk/post/getting-a-variable-name-in-a-pipeline/
@@ -59,6 +106,42 @@ get_current_file_name <- function() {
   rstudioapi::getActiveDocumentContext()$path |> str_split(pattern = "/") |> first() |> last() |> str_split("[.]") |> first() |> first()
 }
 
+
+#-------------------#
+#### Stats Utils ####
+#-------------------#
+
+poly_encoding <- function(fctr) {
+  contrasts(fctr) <- contr.poly
+  return(
+    car::Recode(fctr, glue::glue_collapse(glue::glue("'{levels(fctr)}' = {as.vector(contrasts(fctr)[,1])}"), sep = "; ") |> as_string()) |> 
+      as.character() |> 
+      as.numeric()
+  )
+}
+
+label_encoding <- function(var) {
+  vals <- unique(var)
+  car::Recode(var, glue::glue_collapse(glue::glue("'{vals}' = {as.vector(seq.int(1, length(vals)))}"), sep = "; ") |> as_string()) |> 
+    as.character() |> 
+    as.numeric()
+}
+
+
+#------------#
+#### Misc ####
+#------------#
+
+update_submodules <- function() {
+  if(Sys.info()[["sysname"]] == "Linux") {
+    system(glue::glue("chmod +x {here::here('update_submodules.sh')}"), intern = TRUE)
+    system("#!/bin/sh", intern = TRUE)
+    system(here::here("update_submodules.sh"), intern = TRUE)
+  }
+  else if(Sys.info()[["sysname"]] == "Windows") system(here::here("update_submodules.bat"), intern = TRUE)
+}
+
+
 ### From: https://gist.github.com/alexpghayes/9118cda66375e593343fe28c8d13fdb5
 # Upload a data frame to google drive, make it shareable, and copy the shareable link into the clipboard
 # See: https://googledrive.tidyverse.org/
@@ -81,18 +164,6 @@ get_shareable_link_to_data <- function(data, path, direct = TRUE) {
   invisible(link)
 }
 
-save_png <- function(plot, filename = NULL, subfolder = "", dpi = 600, width = 8, height = 8, display = TRUE) {
-  if(is.null(filename)) filename <- as.list(match.call()[-1])$plot
-  
-  file_path <- here("fig", paste0(filename, ".png"))
-  if(subfolder != "") {
-    if(!dir.exists(here::here("fig", subfolder))) dir.create(here::here("fig", subfolder))
-    file_path <- here("fig", subfolder, paste0(filename, ".png"))
-  }
-  
-  ggsave(filename = file_path, plot = plot, device = "png", scale = 1, dpi = dpi, width = width, height = height)
-  if(display) return(plot)
-}
 
 ## Get element by name from list:
 rmatch <- function(x, name) {
@@ -106,34 +177,11 @@ rmatch <- function(x, name) {
   }
 }
 
+
 ## Convert matrix to math latex notation
 matrix2latex <- function(mat) {
   printmrow <- \(x) cat(paste0(x, collapse = " & "), "\\\\\n")
   cat("$$\n", "\\begin{bmatrix}", "\n", sep = "")
   body <- apply(mat, 1, printmrow)
   cat("\\end{bmatrix}", "\n$$", sep = "")
-}
-
-#-------------------#
-#### Stats Utils ####
-#-------------------#
-
-get_stars <- function(expr, p.val) {
-  return(ifelse(expr == regulation_type$NOT_REG, "", gtools::stars.pval(p.val)))
-}
-
-poly_encoding <- function(fctr) {
-  contrasts(fctr) <- contr.poly
-  return(
-    car::Recode(fctr, glue::glue_collapse(glue::glue("'{levels(fctr)}' = {as.vector(contrasts(fctr)[,1])}"), sep = "; ") |> as_string()) |> 
-      as.character() |> 
-      as.numeric()
-  )
-}
-
-label_encoding <- function(var) {
-  vals <- unique(var)
-  car::Recode(var, glue::glue_collapse(glue::glue("'{vals}' = {as.vector(seq.int(1, length(vals)))}"), sep = "; ") |> as_string()) |> 
-    as.character() |> 
-    as.numeric()
 }

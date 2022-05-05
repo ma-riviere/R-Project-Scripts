@@ -19,15 +19,13 @@ set.seed(getOption("seed"))
 #-------------------------#
 
 knitr::opts_chunk$set(
-  collapse = TRUE,
   warning = FALSE,
   message = FALSE,
   fig.align = "center",
-  fig.retina = 3,
-  # fig.width = 10,
-  dpi = 600,
-  dev = 'png' # svg
-  # dev.args = list(bg = "transparent")
+  fig.retina = 2,
+  dpi = 300,
+  dev = 'svg',
+  dev.args = list(bg = "transparent")
 )
 
 #---------------#
