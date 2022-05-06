@@ -2,6 +2,8 @@
 #### Project Setup ####
 #=====================#
 
+is_installed <- \(pkg) suppressMessages({require(pkg, quietly = TRUE, warn.conflicts = FALSE, character.only = TRUE)})
+
 here::i_am("src/common/setup.R")
 
 com_path <- here::here("src", "common")
