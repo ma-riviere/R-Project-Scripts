@@ -1,19 +1,13 @@
-#====================#
-#### Project Init ####
-#====================#
+#=====================#
+#### Project Setup ####
+#=====================#
 
-is_installed <- \(pkg) suppressMessages({require(pkg, quietly = TRUE, warn.conflicts = FALSE, character.only = TRUE)})
-
-if (!is_installed("here")) {install.packages("here"); require(here, quietly = TRUE)}
+here::i_am("src/common/setup.R")
 
 com_path <- here::here("src", "common")
-source(here::here(com_path, "logger.R"), echo = F)
+source(here::here(com_path, "logger.R"), echo = FALSE)
 
 log.title("[SETUP] Setting up the project ...\n")
-
-if (!is_installed("renv")) {install.packages("renv"); require(renv, quietly = TRUE)}
-
-here::i_am("src/common/init.R")
 
 if(is.null(renv::project())) renv::init(project = here::here(), bare = TRUE, restart = FALSE)
 
