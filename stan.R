@@ -73,7 +73,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
         if(Sys.info()[["sysname"]] == "Windows") {
           if(Sys.getenv("CUDA_PATH") != "") {
             
-            CUDA_PATH <- normalizePath(file.path(Sys.getenv("CUDA_PATH"), "/lib/x64"))
+            CUDA_PATH <- file.path(Sys.getenv("CUDA_PATH"), "/lib/x64")
             
             if(dir.exists(CUDA_PATH)) {
               log.note("[CONFIG] Found existing CUDA_PATH: ", CUDA_PATH)
@@ -112,7 +112,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     }
     
     # if (Sys.info()[["sysname"]] == "Windows") {
-      # CMDSTAN_TBB <- normalizePath(file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb"))
+      # CMDSTAN_TBB <- file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb")
       # Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
     # }
     
