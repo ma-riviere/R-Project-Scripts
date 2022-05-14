@@ -10,19 +10,23 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     
     log.main("[CONFIG] Setting up CmdStan ...")
     
-    if(is.null(version)) version <- gh::gh("GET /repos/stan-dev/cmdstan/releases/latest", .token = global_config$github_pat %ne% Sys.getenv("GITHUB_PAT"))[["tag_name"]] |> substring(2)
+    if(is.null(version)) version <- gh::gh(
+      "GET /repos/stan-dev/cmdstan/releases/latest", 
+      .token = global_config$github_pat %ne% Sys.getenv("GITHUB_PAT")
+    )[["tag_name"]] |> substring(2)
+    
     log.note("[CONFIG] Using CmdStan version: ", version)
     
     ### INFO: If env.var "CMDSTAN" exists, then its value will be automatically set as the default path to CmdStan for the R session
     
-    if (Sys.info()[["sysname"]] == "Windows") cmdstan_root <<- normalizePath("D:/Dev/SDK/")
-    else if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <<- normalizePath("/home/mar/Dev/SDK/")
+    cmdstan_root <- normalizePath("D:/Dev/SDK/")
+    if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <- normalizePath("/home/mar/Dev/SDK/")
     
     cmdstan_dir <- ".cmdstan"
     cmdstan_version <- paste0("cmdstan-", version)
     cmdstan_install_path <- normalizePath(file.path(cmdstan_root, cmdstan_dir))
     
-    if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path)
+    if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path, recursive = TRUE)
     
     cmdstan_path <- normalizePath(file.path(cmdstan_install_path, cmdstan_version))
     
@@ -30,11 +34,6 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     if (rebuild) {
       
       ### General params
-      
-      #### Changing default installation location (i.e. "HOME") to provided path
-      OLD_HOME <- Sys.getenv("HOME")
-      Sys.setenv(HOME = cmdstan_root)
-      
       cpp_opts <- list(
         STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE,
         "CXXFLAGS += -O3 -march=native -mtune=native" # TODO: if issues on Windows -> CXXFLAGS += -march=native
@@ -93,23 +92,20 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       
       if (Sys.info()[["sysname"]] == "Windows") {
         cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-        # cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
+        cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
         
-        cmdstan_archive_name <- paste0(cmdstan_version, ".tar.gz")
-        cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_archive_name}")
-        
-        download.file(cmdstan_archive_url, destfile = cmdstan_archive_name, mode = "wb")
-        untar(tarfile = cmdstan_archive_name, exdir = cmdstan_install_path)
-        cmdstanr::set_cmdstan_path(cmdstan_path) # FIXME (2.28.1): Has to be here too ???
-        cmdstanr::cmdstan_make_local(dir = cmdstan_path, cpp_options = cpp_opts, append = FALSE)
-        cmdstanr::rebuild_cmdstan(dir = cmdstan_path, quiet = TRUE)
-        if (file.exists(cmdstan_archive_name)) file.remove(cmdstan_archive_name)
+        # cmdstan_archive_name <- paste0(cmdstan_version, ".tar.gz")
+        # cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_archive_name}")
+        # download.file(cmdstan_archive_url, destfile = cmdstan_archive_name, mode = "wb")
+        # untar(tarfile = cmdstan_archive_name, exdir = cmdstan_install_path)
+        # cmdstanr::set_cmdstan_path(cmdstan_path) # FIXME (2.28.1): Has to be here too ???
+        # cmdstanr::cmdstan_make_local(dir = cmdstan_path, cpp_options = cpp_opts, append = FALSE)
+        # cmdstanr::rebuild_cmdstan(dir = cmdstan_path, quiet = TRUE)
+        # if (file.exists(cmdstan_archive_name)) file.remove(cmdstan_archive_name)
       }
       else if (Sys.info()[["sysname"]] == "Linux") {
         cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
       }
-      
-      Sys.setenv(HOME = OLD_HOME)
       
     } else { ## No rebuild, only configure
       cmdstanr::set_cmdstan_path(cmdstan_path)
@@ -145,7 +141,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
           file <- cmdstanr::write_stan_file(options$code, dir = dir) # , force_overwrite = TRUE
           mod <- cmdstanr::cmdstan_model(
             file, 
-            cpp_options = list(stan_threads = TRUE), stanc_options = list("Oexperimental")
+            cpp_options = list(stan_threads = TRUE), stanc_options = list("O1") ## TODO: pass those options into the chunk options ?
           )
           assign(output_var, mod, envir = knitr::knit_global())
         }
