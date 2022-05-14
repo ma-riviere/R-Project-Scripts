@@ -19,16 +19,16 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     
     ### INFO: If env.var "CMDSTAN" exists, then its value will be automatically set as the default path to CmdStan for the R session
     
-    cmdstan_root <- normalizePath("D:/Dev/SDK/")
-    if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <- normalizePath("/home/mar/Dev/SDK/")
+    cmdstan_root <- "D:/Dev/SDK/"
+    if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <- "/home/mar/Dev/SDK/"
     
     cmdstan_dir <- ".cmdstan"
     cmdstan_version <- paste0("cmdstan-", version)
-    cmdstan_install_path <- normalizePath(file.path(cmdstan_root, cmdstan_dir))
+    cmdstan_install_path <- file.path(cmdstan_root, cmdstan_dir)
     
     if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path, recursive = TRUE)
     
-    cmdstan_path <- normalizePath(file.path(cmdstan_install_path, cmdstan_version))
+    cmdstan_path <- file.path(cmdstan_install_path, cmdstan_version)
     
     ## Rebuilding CmdStan install
     if (rebuild) {
