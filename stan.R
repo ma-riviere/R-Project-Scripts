@@ -22,12 +22,10 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     cmdstan_root <- "D:/Dev/SDK/"
     if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <- "/home/mar/Dev/SDK/"
     
-    cmdstan_dir <- ".cmdstan"
-    cmdstan_version <- paste0("cmdstan-", version)
-    cmdstan_install_path <- file.path(cmdstan_root, cmdstan_dir)
-    
+    cmdstan_install_path <- file.path(cmdstan_root, ".cmdstan")
     if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path, recursive = TRUE)
     
+    cmdstan_version <- paste0("cmdstan-", version)
     cmdstan_path <- file.path(cmdstan_install_path, cmdstan_version)
     
     ## Rebuilding CmdStan install
@@ -92,7 +90,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       
       if (Sys.info()[["sysname"]] == "Windows") {
         cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-        cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
+        cmdstanr::install_cmdstan(dir = cmdstan_install_path, overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
         
         # cmdstan_archive_name <- paste0(cmdstan_version, ".tar.gz")
         # cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_archive_name}")
@@ -104,7 +102,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
         # if (file.exists(cmdstan_archive_name)) file.remove(cmdstan_archive_name)
       }
       else if (Sys.info()[["sysname"]] == "Linux") {
-        cmdstanr::install_cmdstan(overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
+        cmdstanr::install_cmdstan(dir = cmdstan_install_path, overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
       }
       
     } else { ## No rebuild, only configure
@@ -112,14 +110,14 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     }
     
     # if (Sys.info()[["sysname"]] == "Windows") {
-      # CMDSTAN_TBB <- file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb")
-      # Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
+    # CMDSTAN_TBB <- file.path(cmdstan_path, "stan/lib/stan_math/lib/tbb")
+    # Sys.setenv("Path" = paste0(Sys.getenv("PATH"), CMDSTAN_TBB))
     # }
     
     Sys.setenv("OPENBLAS_NUM_THREADS" = 1)
     
     options(brms.backend = "cmdstanr")
-
+    
     knitr::knit_engines$set(
       cmdstan = function(options) {
         output_var <- options$output.var
