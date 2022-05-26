@@ -102,8 +102,10 @@ get_lhs <- function() {
   }
 }
 
-get_current_file_name <- function() {
-  rstudioapi::getActiveDocumentContext()$path |> str_split(pattern = "/") |> first() |> last() |> str_split("[.]") |> first() |> first()
+get_current_file_name <- function(ext = TRUE) {
+  file <- fs::path_file(rstudioapi::getActiveDocumentContext()$path)
+  if (ext) return(file)
+  else return(fs::path_ext_remove(file))
 }
 
 
