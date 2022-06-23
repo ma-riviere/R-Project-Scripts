@@ -1,6 +1,6 @@
-#=============================#
-#### CmdStan configuration ####
-#=============================#
+####╔═════    ═════╗####
+####💠 Stan Setup 💠####
+####╚═════    ═════╝####
 
 configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS = NULL) {
   
@@ -34,7 +34,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       ### General params
       cpp_opts <- list(
         STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE,
-        "CXXFLAGS += -O3 -march=native -mtune=native" # TODO: if issues on Windows -> CXXFLAGS += -march=native
+        "CXXFLAGS += -O3 -march=native -mtune=native"
       )
       
       ### BLAS params

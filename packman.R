@@ -1,6 +1,6 @@
-#========================#
-#### Packages Manager ####
-#========================#
+####╔═══════     ═══════╗####
+####💠 Package Manager 💠####
+####╚═══════     ═══════╝####
 
 source(here::here("src", "packages.R"), echo = F)
 
@@ -15,9 +15,9 @@ Sys.setenv(MAKEFLAGS = paste0("-j", getOption("Ncpus")))
 
 suite_pkgs_names <- c("tidyverse", "tidymodels", "easystats")
 
-#---------------------#
-#### Main function ####
-#---------------------#
+#----------------------#
+####🔺Main function ####
+#----------------------#
 
 init_project_packages <- function(install = FALSE, update = FALSE, clean = FALSE) {
   
@@ -88,9 +88,9 @@ init_base_packages <- function() {
   load_packages(base_pkgs)
 }
 
-#------------------------#
-#### Helper functions ####
-#------------------------#
+#-------------------------#
+####🔺Helper functions ####
+#-------------------------#
 
 get_pkg_name <- function(pkg) {
   pkg_name <- pkg

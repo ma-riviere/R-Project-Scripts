@@ -1,10 +1,12 @@
-#=============#
-#### Theme ####
-#=============#
+####╔════  ═══╗####
+####💠 Theme 💠####
+####╚════  ═══╝####
 
-#----------------------#
-#### Default colors ####
-#----------------------#
+log.title("[UTILS] Loading Themes ...")
+
+#---------------#
+####🔺Colors ####
+#---------------#
 
 bg_color_light <- "white"
 primary_color_light <- "black"
@@ -25,9 +27,9 @@ options(
   ggplot2.binned.fill = \() scale_fill_viridis_b()
 )
 
-#---------------------#
-#### GGplot themes ####
-#---------------------#
+#--------------#
+####🔺Plots ####
+#--------------#
 
 base_theme_mar <- ggplot2::theme_minimal() +
   ggplot2::theme(
@@ -97,9 +99,9 @@ theme_dark_mar <- base_theme_mar + dark_addon_mar
 ggplot2::theme_set(theme_light_mar)
 
 
-#--------------#
-#### Tables ####
-#--------------#
+#---------------#
+####🔺Tables ####
+#---------------#
 
 format_gt <- function(gt_tbl) {
   

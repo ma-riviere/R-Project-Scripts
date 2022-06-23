@@ -1,12 +1,12 @@
-#===============================#
-#### Miscellaneous functions ####
-#===============================#
+####╔═══    ══╗####
+####💠 Utils 💠####
+####╚═══    ══╝####
 
 log.title("[UTILS] Loading Utils ...")
 
-#-------------#
-#### Pipes ####
-#-------------#
+#--------------#
+####🔺Pipes ####
+#--------------#
 
 "%ni%" <- Negate("%in%")
 
@@ -15,9 +15,9 @@ log.title("[UTILS] Loading Utils ...")
 "%ne%" <- \(lhs, rhs) if(is.null(lhs) || rlang::is_empty(lhs) || lhs == "") return(rhs) else return(lhs)
 
 
-#--------------#
-#### Images ####
-#--------------#
+#---------------#
+####🔺Images ####
+#---------------#
 
 save_png <- function(plot, filename = NULL, subfolder = "", dpi = 600, width = 8, height = 8, display = TRUE) {
   if(is.null(filename)) filename <- as.list(match.call()[-1])$plot
@@ -32,9 +32,9 @@ save_png <- function(plot, filename = NULL, subfolder = "", dpi = 600, width = 8
   if(display) return(plot)
 }
 
-#------------------#
-#### Name utils ####
-#------------------#
+#-------------------#
+####🔺Text utils ####
+#-------------------#
 
 format_pvalue <- \(p) glue::glue("{scales::pvalue(p)} {gtools::stars.pval(p) |> str_remove_all(fixed('.'))}")
 
@@ -109,9 +109,9 @@ get_current_file_name <- function(ext = TRUE) {
 }
 
 
-#-------------------#
-#### Stats Utils ####
-#-------------------#
+#--------------------#
+####🔺Stats utils ####
+#--------------------#
 
 poly_encoding <- function(fctr) {
   contrasts(fctr) <- contr.poly
@@ -130,9 +130,9 @@ label_encoding <- function(var) {
 }
 
 
-#------------#
-#### Misc ####
-#------------#
+#-------------#
+####🔺Misc ####
+#-------------#
 
 update_submodules <- function() {
   if(Sys.info()[["sysname"]] == "Linux") {

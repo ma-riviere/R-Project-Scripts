@@ -1,6 +1,6 @@
-#======================#
-#### Global Configs ####
-#======================#
+####╔══════    ══════╗####
+####💠Global Configs💠####
+####╚══════    ══════╝####
 
 log.title("[CONFIG] Loading Global Configs ...")
 
@@ -14,9 +14,9 @@ options(
 
 set.seed(getOption("seed"))
 
-#-------------------------#
-#### Knitr & RMarkdown ####
-#-------------------------#
+#--------------------------#
+####🔺Knitr & RMarkdown ####
+#--------------------------#
 
 knitr::opts_chunk$set(
   warning = FALSE,
@@ -28,15 +28,15 @@ knitr::opts_chunk$set(
   dev.args = list(bg = "transparent")
 )
 
-#---------------#
-#### Masking ####
-#---------------#
+#----------------#
+####🔺Masking ####
+#----------------#
 
 get <- base::get
 
-#-----------------------#
-#### Package options ####
-#-----------------------#
+#------------------------#
+####🔺Package options ####
+#------------------------#
 
 load_global_config <- function() {
   global_config <- tryCatch(

@@ -1,6 +1,10 @@
-#=====================#
-#### Project Setup ####
-#=====================#
+####╔══════     ══════╗####
+####💠 Project Setup 💠####
+####╚══════     ══════╝####
+
+#-----------------------#
+####🔺Global scripts ####
+#-----------------------#
 
 is_installed <- \(pkg) suppressMessages({require(pkg, quietly = TRUE, warn.conflicts = FALSE, character.only = TRUE)})
 
@@ -43,9 +47,9 @@ source(here::here(com_path, "config_global.R"), echo = FALSE)
 global_config <- load_global_config()
 
 
-#--------------------------------#
-#### Project-specific scripts ####
-#--------------------------------#
+#------------------------#
+####🔺Project scripts ####
+#------------------------#
 
 setup_project <- function(...) {
   
