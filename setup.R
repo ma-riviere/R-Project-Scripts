@@ -17,11 +17,12 @@ log.title("[SETUP] Setting up the project ...\n")
 
 if(is.null(renv::project())) renv::init(project = here::here(), bare = TRUE, restart = FALSE)
 
-## Temporary fix for renv library path issue
 if (!startsWith(.libPaths()[1], here::here())) {
   v <- paste0("R-", version$major, ".", strsplit(version$minor, ".", fixed = TRUE)[[1]][1])
   dir <- ifelse(Sys.info()[["sysname"]] == "Windows", "x86_64-w64-mingw32", "x86_64-pc-linux-gnu")
-  .libPaths(here::here("renv", "library", v, dir)) # renv::use(library = here::here("renv", "library", v, dir))
+  path <- here::here("renv", "library", v, dir)
+  dir.create(path, recursive = TRUE)
+  .libPaths(path)
 }
 
 if(!file.exists(here::here("config.yml"))) {
