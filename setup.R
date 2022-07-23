@@ -57,6 +57,8 @@ setup_project <- function(...) {
   source(here::here("src", "authors.R"), echo = FALSE)
 
   init_project_packages(...)
+  
+  source(here::here("src", "common", "theme.R"), echo = FALSE)
 
   source(here::here("src", "config_project.R"), echo = FALSE)
   
@@ -69,7 +71,6 @@ setup_project <- function(...) {
     \(f) source(here::here("src", f), verbose = FALSE, echo = FALSE)
   )
   
-  source(here::here("src", "common", "theme.R"), echo = FALSE)
   source(here::here("src", "common", "stan.R"), echo = FALSE)
   
   rm(tmp)
