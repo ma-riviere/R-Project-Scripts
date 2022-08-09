@@ -22,7 +22,7 @@ if (!startsWith(.libPaths()[1], here::here())) {
   dir <- ifelse(Sys.info()[["sysname"]] == "Windows", "x86_64-w64-mingw32", "x86_64-pc-linux-gnu")
   path <- here::here("renv", "library", v, dir)
   if(!dir.exists(path)) dir.create(path, recursive = TRUE)
-  .libPaths(path)
+  renv::use(library = path) # .libPaths(path)
 }
 
 if(!file.exists(here::here("config.yml"))) {
