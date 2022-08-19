@@ -2,6 +2,13 @@
 ####💠 Stan Setup 💠####
 ####╚═════    ═════╝####
 
+## See: https://blog.mc-stan.org/2022/08/03/options-for-improving-stan-sampling-speed/ 
+##      & https://discourse.mc-stan.org/t/speedup-by-using-external-blas-lapack-with-cmdstan-and-cmdstanr-py/25441/41
+### - Always use -march=native -mtune=native
+### - Use within-chain parallelization whenever possible
+### - When not using within-chain parallelization
+#### * Use MKL/OpenBLAS with 2 threads (or more): only worth it if there are big matrix operations (otherwise, use the default Eigen)
+
 configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS = NULL) {
   
   if(is_installed("cmdstanr")) {
@@ -33,9 +40,15 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       
       ### General params
       cpp_opts <- list(
-        STAN_THREADS = TRUE, PRECOMPILED_HEADERS = TRUE, STAN_CPP_OPTIMS = TRUE,
-        "CXXFLAGS += -O3 -march=native -mtune=native"
+        stan_threads = TRUE
+        , STAN_CPP_OPTIMS = TRUE
+        , STAN_NO_RANGE_CHECKS = TRUE # Careful with that one, better use it on a model basis
+        , PRECOMPILED_HEADERS = TRUE
+        , CXXFLAGS_OPTIM_TBB = "-mtune=native -march=native"
+        , CXXFLAGS_OPTIM_SUNDIALS = "-mtune=native -march=native"
       )
+      
+      if (Sys.info()[["sysname"]] == "Windows") cpp_opts <- append(cpp_opts, list(CXXFLAGS_OPTIM = "-O3 -march=native -mtune=native"))
       
       ### BLAS params
       if (!is.null(BLAS)) {

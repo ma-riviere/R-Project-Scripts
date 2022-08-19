@@ -36,7 +36,9 @@ save_png <- function(plot, filename = NULL, subfolder = NULL, device = "png", dp
 ####🔺Text utils ####
 #-------------------#
 
-format_pvalue <- \(p) glue::glue("{scales::pvalue(p)} {gtools::stars.pval(p) |> str_remove_all(fixed('.'))}")
+label_pval <- function(p) {
+  ifelse(p <= alpha, str_c(scales::label_pvalue()(p), gtools::stars.pval(p) |> str_replace(fixed("."), ""), sep = " "), scales::label_pvalue()(p) |> str_remove(">") |> str_trim())
+}
 
 get_response_name <- function(var) {
   if(exists(paste0(var, "_name"))) return(eval(parse(text = get_var_name(!!paste0(var, "_name")))))
