@@ -17,7 +17,7 @@ source(here::here(com_path, "logger.R"), echo = FALSE)
 log.title("[SETUP] Setting up the project ...\n")
 
 if(is.null(renv::project())) renv::init(project = here::here(), bare = TRUE, restart = FALSE)
-source("renv_setup.R", echo = FALSE)
+source(here::here(com_path, "renv_setup.R"), echo = FALSE)
 
 if(!file.exists(here::here("_config.yml"))) {
   file.create(here::here("_config.yml"))
