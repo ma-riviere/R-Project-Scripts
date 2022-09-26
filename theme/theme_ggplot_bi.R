@@ -1,12 +1,8 @@
-#---------------------#
-#### GGplot themes ####
-#---------------------#
-
-library(ggplot2)
-
 #----------------------#
 ####🔺ggplot themes ####
 #----------------------#
+
+library(ggplot2)
 
 base_theme_mar <- ggplot2::theme_minimal() +
   ggplot2::theme(
@@ -74,28 +70,3 @@ dark_addon_mar <- ggplot2::theme(
 theme_dark_mar <- base_theme_mar + dark_addon_mar
 
 ggplot2::theme_set(theme_light_mar)
-
-#---------------------------#
-####🔺ggplot knit_prints ####
-#---------------------------#
-
-library(knitr)
-
-## Inspired by: https://debruine.github.io/quarto_demo/dark_mode.html
-knit_print.ggplot <- function(x, options, ...) {
-  if(any(stringr::str_detect(class(x), "patchwork"))) {
-    plot_dark <- x & dark_addon_mar
-    plot_light <- x & light_addon_mar
-  } else {
-    plot_dark <- x + dark_addon_mar
-    plot_light <- x + light_addon_mar
-  }
-  
-  cat('\n<div class="light-mode">\n')
-  print(plot_light)
-  cat('</div>\n')
-  cat('<div class="dark-mode">\n')
-  print(plot_dark)
-  cat('</div>\n\n')
-}
-registerS3method("knit_print", "ggplot", knit_print.ggplot)
