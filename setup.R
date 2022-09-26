@@ -25,14 +25,14 @@ if (!startsWith(.libPaths()[1], here::here())) {
   renv::use(library = path) # .libPaths(path)
 }
 
-if(!file.exists(here::here("config.yml"))) {
-  file.create(here::here("config.yml"))
-  cat('default:\r  data: !expr here::here("data", "my_data.csv")\r', file = here::here("config.yml"))
+if(!file.exists(here::here("_config.yml"))) {
+  file.create(here::here("_config.yml"))
+  cat('default:\r  data: !expr here::here("data", "my_data.csv")\r', file = here::here("_config.yml"))
 }
 
-if(!file.exists(here::here("secret.yml"))) {
-  file.create(here::here("secret.yml"))
-  cat('default:\r  api_key: ""\r', file = here::here("secret.yml"))
+if(!file.exists(here::here("_secret.yml"))) {
+  file.create(here::here("_secret.yml"))
+  cat('default:\r  api_key: ""\r', file = here::here("_secret.yml"))
 }
 
 log.main("[SETUP] Loading common scripts ...")
