@@ -1,9 +1,6 @@
 library(gt)
 library(gtExtras, include.only = c("gt_highlight_rows"))
 
-gt_strip_color <- "#efefef"
-gt_header_color <- "#0d6efd"
-
 #---------------------#
 ####🔺Table themes ####
 #---------------------#
@@ -47,8 +44,8 @@ gt_style <- function(gt_tbl) {
     gt_tbl
     |> gt::tab_style(
       style = list(
-        cell_text(color = gt_header_color, weight = "bold"),
-        cell_borders(sides = c("top", "bottom"), color = gt_header_color, style = "solid", weight = px(2))
+        cell_text(color = secondary_color_light, weight = "bold"),
+        cell_borders(sides = c("top", "bottom"), color = secondary_color_light, style = "solid", weight = px(2))
       ),
       locations = list(cells_title(), cells_column_labels())
     )

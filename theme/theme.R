@@ -18,11 +18,8 @@ bg_color_dark <- "#222"
 primary_color_dark <- "white"
 secondary_color_dark <- "#20c997"
 
-strip_color <- "#adb5bd"
-
-#--------------#
-####🔺Plots ####
-#--------------#
+gg_strip_color <- "#adb5bd"
+gt_strip_color <- "#efefef"
 
 options(
   ggplot2.discrete.colour = \() scale_color_viridis_d(),
@@ -32,13 +29,3 @@ options(
   ggplot2.binned.colour = \() scale_color_viridis_b(),
   ggplot2.binned.fill = \() scale_fill_viridis_b()
 )
-
-source("style_ggplot_bi.R", echo = FALSE)
-
-ggplot2::theme_set(theme_light_mar)
-
-#---------------#
-####🔺Tables ####
-#---------------#
-
-source("style_gt_mono.R", echo = FALSE)

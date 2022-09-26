@@ -56,21 +56,26 @@ setup_project <- function(...) {
   ## Theme section ##
   log.main("[SETUP] Loading theme-related scripts ...")
   
-  theme_scripts <- fs::dir_ls(path = here::here(com_path, "theme"), type = "file", glob = "*.R")
-  sapply(theme_scripts, \(f) source(f, verbose = FALSE, echo = FALSE)) |> utils::capture.output()
+  theme_scripts <- c(
+    here::here(com_path, "theme", "theme.R"),
+    fs::dir_ls(path = here::here(com_path, "theme"), type = "file", glob = "*.R") |> 
+      purrr::discard(\(x) fs::path_file(x) %in% c("theme.R"))
+  )
+  purrr::walk(theme_scripts, \(f) source(f, verbose = FALSE, echo = FALSE))
   
   ## Project config section ##
   log.main("[SETUP] Loading project-related scripts ...")
   
   project_scrips <- c(
     here::here(src_path, "config_project.R"),
-    fs::dir_ls(path = src_path, type = "file", glob = "*.R") |> purrr::discard(\(x) fs::path_file(x) %in% c("packages.R", "init.R", "config_project.R"))
+    fs::dir_ls(path = src_path, type = "file", glob = "*.R") |> 
+      purrr::discard(\(x) fs::path_file(x) %in% c("packages.R", "init.R", "config_project.R"))
   )
-  sapply(project_scrips, \(f) source(f, verbose = FALSE, echo = FALSE)) |> utils::capture.output()
+  purrr::walk(project_scrips, \(f) source(f, verbose = FALSE, echo = FALSE))
   
   ## Stan section ##
   log.main("[SETUP] Loading Stan-related scripts ...")
   
   stan_scripts <- fs::dir_ls(path = here::here(com_path, "stan"), type = "file", glob = "*.R")
-  sapply(stan_scripts, \(f) source(f, verbose = FALSE, echo = FALSE)) |> utils::capture.output()
+  purrr::walk(stan_scripts, \(f) source(f, verbose = FALSE, echo = FALSE))
 }

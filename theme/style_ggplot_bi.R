@@ -43,7 +43,7 @@ light_addon_mar <- ggplot2::theme(
   ## Legend
   legend.title = ggplot2::element_text(colour = primary_color_light),
   ## Facets
-  strip.background = ggplot2::element_rect(fill = strip_color),
+  strip.background = ggplot2::element_rect(fill = gg_strip_color),
   strip.text = ggplot2::element_text(colour = primary_color_light),
   ## Axes
   axis.text = ggplot2::element_text(colour = primary_color_light),
@@ -63,7 +63,7 @@ dark_addon_mar <- ggplot2::theme(
   ## Legend
   legend.title = ggplot2::element_text(colour = primary_color_dark),
   ## Facets
-  strip.background = ggplot2::element_rect(fill = strip_color),
+  strip.background = ggplot2::element_rect(fill = gg_strip_color),
   strip.text = ggplot2::element_text(colour = primary_color_dark),
   ## Axes
   axis.text = ggplot2::element_text(colour = primary_color_dark),
@@ -73,6 +73,7 @@ dark_addon_mar <- ggplot2::theme(
 
 theme_dark_mar <- base_theme_mar + dark_addon_mar
 
+ggplot2::theme_set(theme_light_mar)
 
 #---------------------------#
 ####🔺ggplot knit_prints ####
