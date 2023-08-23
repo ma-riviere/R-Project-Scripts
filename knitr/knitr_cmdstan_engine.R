@@ -34,7 +34,7 @@ knitr::knit_engines$set(
           , CXXFLAGS_OPTIM_TBB = "-mtune=native -march=native"
           , CXXFLAGS_OPTIM_SUNDIALS = "-mtune=native -march=native"
         ),
-        stanc_options = list("Oexperimental"),
+        stanc_options = list("O1"),
         force_recompile = TRUE
       )
       assign(output_var, mod, envir = knitr::knit_global())

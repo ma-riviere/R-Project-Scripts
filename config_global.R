@@ -63,14 +63,16 @@ configure_git <- function() {
 
 configure_packages <- function() {
   
+  if (is_installed("dplyr")) options(dplyr.summarise.inform = FALSE)
+  
   if (is_installed("rstan")) rstan::rstan_options(auto_write = TRUE)
   
-  if (is_installed("loo")) options(loo.cores = getOption("mc.cores"))
+  if (is_installed("loo")) options(loo.cores = max(1L, parallel::detectCores(logical = TRUE)))
   
-  if (is_installed("data.table")) data.table::setDTthreads(getOption("mc.cores"))
+  if (is_installed("data.table")) data.table::setDTthreads(max(1L, parallel::detectCores(logical = TRUE)))
   
   if (is_installed("furrr")) {
-    future::plan(multisession, workers = getOption("mc.cores"))
+    future::plan(multisession, workers = max(1L, parallel::detectCores(logical = TRUE)))
     furrr::furrr_options(seed = getOption("seed"))
   }
   

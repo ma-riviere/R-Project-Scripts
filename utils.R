@@ -24,7 +24,7 @@ save_png <- function(plot, filename = NULL, subfolder = NULL, device = "png", dp
   
   file_path <- here("fig", paste0(filename, ".", device))
   if(!is.null(subfolder)) {
-    if(!dir.exists(here::here("fig", subfolder))) dir.create(here::here("fig", subfolder))
+    if(!dir.exists(here::here("fig", subfolder))) dir.create(here::here("fig", subfolder), recursive = TRUE)
     file_path <- here("fig", subfolder, paste0(filename, ".", device))
   }
   
