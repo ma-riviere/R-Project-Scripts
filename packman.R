@@ -37,6 +37,7 @@ init_project_packages <- function(install = FALSE, update = FALSE, clean = FALSE
     # INSTALL -> compare to list of packages and install non-installed ones
     if (install) {
       log.title("[PACKAGES] Installing project packages ...")
+      options(renv.auth = Sys.getenv("GITHUB_PAT"))
       install_packages(project_pkgs)
     }
     

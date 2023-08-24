@@ -9,7 +9,15 @@
 ### - When not using within-chain parallelization
 #### * Use MKL/OpenBLAS with 2 threads (or more): only worth it if there are big matrix operations (otherwise, use the default Eigen)
 
-configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS = NULL) {
+configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, wsl = FALSE, BLAS = NULL) {
+  
+  wsl_distro_name <- function() {
+    name <- processx::run(
+      command = "wsl",
+      args = c("echo", "$WSL_DISTRO_NAME")
+    )$stdout
+    gsub("\n", "", name, fixed = TRUE)
+  }
   
   if(is_installed("cmdstanr")) {
     
@@ -22,12 +30,11 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       .token = global_config$github_pat %ne% Sys.getenv("GITHUB_PAT")
     )[["tag_name"]] |> substring(2)
     
-    log.note("[CONFIG] Using CmdStan version: ", version)
-    
     ### INFO: If env.var "CMDSTAN" exists, then its value will be automatically set as the default path to CmdStan for the R session
     
-    cmdstan_root <- "D:/Dev/SDK/"
+    cmdstan_root <- "E:/Dev/SDK/"
     if (Sys.info()[["sysname"]] == "Linux") cmdstan_root <- "/home/mar/Dev/SDK/"
+    if (Sys.info()[["sysname"]] == "Windows" && wsl) cmdstan_root <- paste0("//wsl$/", wsl_distro_name(), "/home/mar/Dev/SDK/")
     
     cmdstan_install_path <- file.path(cmdstan_root, ".cmdstan")
     if(!dir.exists(cmdstan_install_path)) dir.create(cmdstan_install_path, recursive = TRUE)
@@ -37,6 +44,8 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
     
     ## Rebuilding CmdStan install
     if (rebuild) {
+
+      log.note("[CONFIG] Installing CmdStan version ", version, " at ", cmdstan_install_path)
       
       ### General params
       cpp_opts <- list(
@@ -49,7 +58,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
         , CXXFLAGS_OPTIM_SUNDIALS = "-mtune=native -march=native"
       )
       
-      if (Sys.info()[["sysname"]] == "Windows") cpp_opts <- append(cpp_opts, list(CXXFLAGS_OPTIM = "-O3 -march=native -mtune=native"))
+      if (Sys.info()[["sysname"]] == "Windows" && !wsl) cpp_opts <- append(cpp_opts, list(CXXFLAGS_OPTIM = "-O3 -march=native -mtune=native"))
       
       ### BLAS params
       if (!is.null(BLAS)) {
@@ -104,7 +113,7 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       
       if (Sys.info()[["sysname"]] == "Windows") {
         cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-        cmdstanr::install_cmdstan(dir = cmdstan_install_path, overwrite = TRUE, cpp_options = cpp_opts, version = version, quiet = TRUE)
+        cmdstanr::install_cmdstan(dir = cmdstan_install_path, overwrite = TRUE, cpp_options = cpp_opts, version = version, wsl = wsl, quiet = TRUE)
         
         # cmdstan_archive_name <- paste0(cmdstan_version, ".tar.gz")
         # cmdstan_archive_url <- glue::glue("https://github.com/stan-dev/cmdstan/releases/download/v{version}/{cmdstan_archive_name}")
@@ -120,6 +129,8 @@ configure_stan <- function(version = NULL, rebuild = FALSE, openCL = FALSE, BLAS
       }
       
     } else { ## No rebuild, only configure
+      log.note("[CONFIG] Installing CmdStan version ", version)
+
       cmdstanr::set_cmdstan_path(cmdstan_path)
     }
     

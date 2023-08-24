@@ -33,7 +33,7 @@ log.main("[SETUP] Loading common scripts ...")
 
 project_base_scripts <- c("logger.R", "utils.R", "packman.R")
 
-tmp <- sapply(project_base_scripts, \(f) source(here::here(com_path, f), echo = FALSE))
+sapply(project_base_scripts, \(f) source(here::here(com_path, f), echo = FALSE)) |> invisible()
 
 init_base_packages()
 
